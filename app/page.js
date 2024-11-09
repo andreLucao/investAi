@@ -2,6 +2,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-   <div>first page</div>
+   caminho 1
+
+   caminho 2
   );
 }
