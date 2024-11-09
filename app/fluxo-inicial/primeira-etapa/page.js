@@ -13,7 +13,6 @@ export default function page1() {
   const [audioURL, setAudioURL] = useState('');
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
-  const audioRef = useRef(null);
 
   const startRecording = async () => {
     try {
@@ -27,11 +26,13 @@ export default function page1() {
       };
 
       mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' }); // Changed to webm format
-        const url = URL.createObjectURL(blob);
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         setAudioBlob(blob);
+        const url = URL.createObjectURL(blob);
         setAudioURL(url);
         chunksRef.current = [];
+        // Navigate to the next route immediately after recording stops
+        router.push('/fluxo-inicial/segunda-etapa');
       };
 
       mediaRecorderRef.current.start();
@@ -52,26 +53,17 @@ export default function page1() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (textInput.trim() || audioBlob) {
-      // Here you would typically upload the audio file to your server
-      // For example:
-      // const formData = new FormData();
-      // if (audioBlob) formData.append('audio', audioBlob);
-      // if (textInput) formData.append('text', textInput);
-      // await fetch('/api/submit', { method: 'POST', body: formData });
-      
+    if (textInput.trim()) {
       router.push('/fluxo-inicial/segunda-etapa');
     }
   };
 
-  // Cleanup function to revoke object URL when component unmounts
   const cleanup = () => {
     if (audioURL) {
       URL.revokeObjectURL(audioURL);
     }
   };
 
-  // Clean up the audio URL when the component unmounts
   useEffect(() => {
     return cleanup;
   }, []);
@@ -102,60 +94,36 @@ export default function page1() {
           
           <form onSubmit={handleSubmit} className="mt-8">
             <div className="space-y-4">
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex items-center gap-2">
-                  {!isRecording ? (
-                    <button
-                      type="button"
-                      onClick={startRecording}
-                      className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
-                    >
-                      <Mic className="w-6 h-6" />
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={stopRecording}
-                      className="p-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-colors"
-                    >
-                      <Square className="w-6 h-6" />
-                    </button>
-                  )}
-                </div>
-                
-                {audioURL && (
-                  <div className="w-full">
-                    <p className="text-sm text-green-600 mb-2">Audio gravado com sucesso!</p>
-                    <audio 
-                      ref={audioRef}
-                      src={audioURL} 
-                      controls 
-                      className="w-full"
-                    >
-                      Your browser does not support the audio element.
-                    </audio>
-                  </div>
-                )}
-              </div>
-
-              <div className="relative">
+              <div className="relative flex items-center">
                 <input
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   placeholder="Ou digite sua resposta aqui..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                <button
+                  type="button"
+                  onClick={isRecording ? stopRecording : startRecording}
+                  className="absolute right-2 p-2 text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  {!isRecording ? (
+                    <Mic className="w-5 h-5" />
+                  ) : (
+                    <Square className="w-5 h-5 text-red-600" />
+                  )}
+                </button>
               </div>
 
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 transition-colors"
-                disabled={!textInput.trim() && !audioBlob}
-              >
-                <Send className="w-4 h-4" />
-                Enviar
-              </button>
+              {textInput.trim() && (
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white rounded-full py-3 px-4 hover:bg-blue-700 transition-colors"
+                >
+                  <Send className="w-4 h-4" />
+                  Enviar
+                </button>
+              )}
             </div>
           </form>
         </div>
