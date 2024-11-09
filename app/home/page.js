@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Inter } from 'next/font/google'
 import { Outfit } from 'next/font/google'
-import { Mic, Brain, UniversalAccess, TrendingUp, ChevronRight, Star, VolumeUp } from 'lucide-react'
+import { Mic, Brain, UniversalAccess, TrendingUp, ChevronRight, Star, VolumeUp, Eye, FileText } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from 'next/link'
@@ -76,6 +76,7 @@ export default function LandingPage() {
                 description="IA avançada para entender suas necessidades financeiras únicas."
               />
               <FeatureCard
+                icon={<Eye className="text-purple-600" size={32} />}
                 title="Acessibilidade Total"
                 description="Ferramentas inclusivas para todos os usuários, independente das habilidades."
               />
@@ -106,6 +107,7 @@ export default function LandingPage() {
             />
             <StepCard
               number={3}
+              icon={<FileText className="text-purple-600" size={24} />}
               title="Receba Recomendações"
               description="Ouça ou leia conselhos detalhados adaptados ao seu perfil."
             />
