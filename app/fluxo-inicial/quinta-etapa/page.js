@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 
 export default function LoadingPage() {
   const router = useRouter()
+  //shogo
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -23,5 +24,5 @@ export default function LoadingPage() {
         A <span className="text-primary font-semibold">{'nome da nossa plataforma'}</span> esta pronta para você :)
       </h1>
     </div>
-  )
+  ) 
 }
