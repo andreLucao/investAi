@@ -16,7 +16,7 @@ export default function page3() {
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 text-center">
         <h1 className="text-2xl font-bold text-black mb-8">
-          O que você acha de setarmos alguns objetivos?
+          O que você acha de criarmos alguns objetivos?
         </h1>
 
         <h1 className="text-2xl font-semi-bold text-black mb-8">
