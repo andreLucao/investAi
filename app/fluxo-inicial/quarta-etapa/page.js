@@ -2,16 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mic, Square, Send } from 'lucide-react';
+import { Mic, Square } from 'lucide-react';
 
-export default function page4() {
+export default function page1() {
   const router = useRouter();
   const [isRecording, setIsRecording] = useState(false);
-  const [audioBlob, setAudioBlob] = useState(null);
-  const [audioURL, setAudioURL] = useState('');
+  const [textInput, setTextInput] = useState('');
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
-  const audioRef = useRef(null);
 
   const startRecording = async () => {
     try {
@@ -26,10 +24,14 @@ export default function page4() {
 
       mediaRecorderRef.current.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        const url = URL.createObjectURL(blob);
-        setAudioBlob(blob);
-        setAudioURL(url);
         chunksRef.current = [];
+        
+        // Create FormData and submit immediately
+        const formData = new FormData();
+        formData.append('audio', blob);
+        if (textInput) formData.append('text', textInput);
+        
+        router.push('/fluxo-inicial/quinta-etapa');
       };
 
       mediaRecorderRef.current.start();
@@ -50,20 +52,10 @@ export default function page4() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you could handle the audio upload before navigation
-    // const formData = new FormData();
-    // if (audioBlob) formData.append('audio', audioBlob);
-    // await fetch('/api/submit', { method: 'POST', body: formData });
+    const formData = new FormData();
+    if (textInput) formData.append('text', textInput);
     router.push('/fluxo-inicial/quinta-etapa');
   };
-
-  useEffect(() => {
-    return () => {
-      if (audioURL) {
-        URL.revokeObjectURL(audioURL);
-      }
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
@@ -73,68 +65,60 @@ export default function page4() {
         </h1>
         <div className="space-y-6">
           <div>
-            <p className="text-lg font-medium text-black">O que você acha de criar a meta com base nos seus objetivos?</p>
+            <p className="text-lg font-medium text-black">Qual é sua renda media atual?</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Exemplos mais escolhidos:</p>
+            <p className="text-lg font-medium text-black">Atualmente voce tem dividas?</p>
+            <p className="text-sm text-gray-600 mt-1">(se sim, quanto)</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Dinheiro para uma casa</p>
+            <p className="text-lg font-medium text-black">Me fale de onde você é.</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Casamento</p>
+            <p className="text-lg font-medium text-black">Voce ja apostou ou tem costume de apostar?</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Viagem</p>
+            <p className="text-lg font-medium text-black">Vc tem filhos?</p>
           </div>
           
           <form onSubmit={handleSubmit} className="mt-8">
-            <div className="space-y-4">
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex items-center gap-2">
-                  {!isRecording ? (
-                    <button
-                      type="button"
-                      onClick={startRecording}
-                      className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
-                    >
-                      <Mic className="w-6 h-6" />
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={stopRecording}
-                      className="p-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-colors"
-                    >
-                      <Square className="w-6 h-6" />
-                    </button>
-                  )}
-                </div>
-                
-                {audioURL && (
-                  <div className="w-full">
-                    <p className="text-sm text-green-600 mb-2">Audio gravado com sucesso!</p>
-                    <audio 
-                      ref={audioRef}
-                      src={audioURL} 
-                      controls 
-                      className="w-full"
-                    >
-                      Your browser does not support the audio element.
-                    </audio>
-                  </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                placeholder="Ou digite sua resposta aqui..."
+                className="w-full px-6 py-4 pr-14 border border-gray-200 rounded-full bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-600 placeholder-gray-400"
+              />
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                {!isRecording ? (
+                  <button
+                    type="button"
+                    onClick={startRecording}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <Mic className="w-6 h-6" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={stopRecording}
+                    className="text-gray-600 hover:text-gray-800 transition-colors"
+                  >
+                    <Square className="w-6 h-6" />
+                  </button>
                 )}
               </div>
+            </div>
 
+            {textInput.trim() && (
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 transition-colors"
-                disabled={!audioBlob} // Only enable submit when audio is recorded
+                className="w-full mt-4 bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 transition-colors"
               >
-                <Send className="w-4 h-4" />
                 Enviar
               </button>
-            </div>
+            )}
           </form>
         </div>
       </div>
