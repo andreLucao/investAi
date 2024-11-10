@@ -73,14 +73,14 @@ export default function FirstStage() {
             },
             {
               role: "user",
-              content: Process this audio transcription and extract key information about: income, debts, location, gambling habits, and children. Audio content: ${base64Audio}
+              content: `Process this audio transcription and extract key information about: income, debts, location, gambling habits, and children. Audio content: ${base64Audio}`
             }
           ]
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to process audio');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const reader = response.body.getReader();
@@ -91,20 +91,35 @@ export default function FirstStage() {
         if (done) break;
         
         const chunk = new TextDecoder().decode(value);
-        accumulatedResponse += chunk;
+        try {
+          // Attempt to parse the chunk as JSON
+          JSON.parse(chunk);
+          accumulatedResponse = chunk;
+        } catch {
+          // If it's not valid JSON, accumulate it
+          accumulatedResponse += chunk;
+        }
       }
 
-      // Store the parsed response in localStorage for next stages
+      // Try to parse the final response
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(accumulatedResponse);
+      } catch (error) {
+        console.error('Error parsing response:', error);
+        parsedResponse = { error: 'Failed to parse response' };
+      }
+
+      // Store the parsed response in localStorage
       localStorage.setItem('llamaParseStage1', JSON.stringify({
         timestamp: new Date().toISOString(),
-        response: accumulatedResponse
+        response: parsedResponse
       }));
 
-      // Navigate to next stage
       router.push('/fluxo-inicial/segunda-etapa');
     } catch (error) {
       console.error('Error processing audio:', error);
-      alert('Error processing audio. Please try again.');
+      alert('Erro ao processar o áudio. Por favor, tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -136,7 +151,7 @@ export default function FirstStage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to process text input');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const reader = response.body.getReader();
@@ -147,20 +162,34 @@ export default function FirstStage() {
         if (done) break;
         
         const chunk = new TextDecoder().decode(value);
-        accumulatedResponse += chunk;
+        try {
+          // Attempt to parse the chunk as JSON
+          JSON.parse(chunk);
+          accumulatedResponse = chunk;
+        } catch {
+          // If it's not valid JSON, accumulate it
+          accumulatedResponse += chunk;
+        }
       }
 
-      // Store the parsed response in localStorage for next stages
+      // Try to parse the final response
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(accumulatedResponse);
+      } catch (error) {
+        console.error('Error parsing response:', error);
+        parsedResponse = { error: 'Failed to parse response' };
+      }
+
       localStorage.setItem('llamaParseStage1', JSON.stringify({
         timestamp: new Date().toISOString(),
-        response: accumulatedResponse
+        response: parsedResponse
       }));
 
-      // Navigate to next stage
       router.push('/fluxo-inicial/segunda-etapa');
     } catch (error) {
       console.error('Error processing text:', error);
-      alert('Error processing text. Please try again.');
+      alert('Erro ao processar o texto. Por favor, tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -171,31 +200,35 @@ export default function FirstStage() {
       if (audioURL) {
         URL.revokeObjectURL(audioURL);
       }
+      // Clean up media stream on unmount
+      if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
+        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      }
     };
   }, [audioURL]);
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 text-center">
-        <h1 className="text-2xl font-bold text-black mb-8">
-          Me manda um audio me respondendo essas perguntas:
+        <h1 className="text-2xl font-bold text-gray-900 mb-8">
+          Me manda um áudio me respondendo essas perguntas:
         </h1>
         <div className="space-y-6">
           <div>
-            <p className="text-lg font-medium text-black">Qual é sua renda media atual?</p>
+            <p className="text-lg font-medium text-gray-900">Qual é sua renda média atual?</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Atualmente voce tem dividas?</p>
+            <p className="text-lg font-medium text-gray-900">Atualmente você tem dívidas?</p>
             <p className="text-sm text-gray-600 mt-1">(se sim, quanto)</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Me fale de onde você é.</p>
+            <p className="text-lg font-medium text-gray-900">Me fale de onde você é.</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Voce ja apostou ou tem costume de apostar?</p>
+            <p className="text-lg font-medium text-gray-900">Você já apostou ou tem costume de apostar?</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Vc tem filhos?</p>
+            <p className="text-lg font-medium text-gray-900">Você tem filhos?</p>
           </div>
           
           <form onSubmit={handleTextSubmit} className="mt-8">
@@ -207,18 +240,20 @@ export default function FirstStage() {
                   onChange={(e) => setTextInput(e.target.value)}
                   placeholder="Ou digite sua resposta aqui..."
                   className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  disabled={isLoading}
+                  disabled={isLoading || isRecording}
                 />
                 <button
                   type="button"
                   onClick={isRecording ? stopRecording : startRecording}
-                  className="absolute right-2 p-2 text-gray-500 hover:text-gray-700 transition-colors"
+                  className={`absolute right-2 p-2 transition-colors ${
+                    isLoading ? 'text-gray-400 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700'
+                  }`}
                   disabled={isLoading}
                 >
-                  {!isRecording ? (
-                    <Mic className="w-5 h-5" />
-                  ) : (
+                  {isRecording ? (
                     <Square className="w-5 h-5 text-red-600" />
+                  ) : (
+                    <Mic className="w-5 h-5" />
                   )}
                 </button>
               </div>
@@ -226,11 +261,20 @@ export default function FirstStage() {
               {textInput.trim() && (
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white rounded-full py-3 px-4 hover:bg-blue-700 transition-colors"
+                  disabled={isLoading || isRecording}
+                  className={`w-full flex items-center justify-center gap-2 rounded-full py-3 px-4 transition-colors ${
+                    isLoading || isRecording
+                      ? 'bg-blue-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  } text-white`}
                 >
                   <Send className="w-4 h-4" />
                   Enviar
                 </button>
+              )}
+
+              {isLoading && (
+                <div className="text-sm text-gray-600">Processando...</div>
               )}
             </div>
           </form>
