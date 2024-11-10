@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Send } from 'lucide-react';
 
 export default function FinancialAssistant() {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(''); 
   const [chatHistory, setChatHistory] = useState([]); 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
