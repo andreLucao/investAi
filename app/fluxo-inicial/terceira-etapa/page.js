@@ -27,7 +27,7 @@ export default function page3() {
         <div className="space-y-6">
           
           <div>
-            <p className="text-lg font-medium text-black">Sua renda se divide nessas categorias:</p>
+            <p className="text-lg font-medium text-black">Sua renda deve ser dividida da seguinte maneira:</p>
           </div>
           <div>
             <p>💰 Gastos Fixos: <strong>55%</strong></p>
