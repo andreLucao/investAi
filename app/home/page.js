@@ -33,7 +33,7 @@ export default function LandingPage() {
                 Aposte no seu futuro! <br />Se livre das dividas e alcance seus sonhos.
               </p>
               <div className="flex items-center space-x-4">
-                <Link href="/fluxo-inicial">
+                <Link href="/fluxo-inicial/primeira-etapa">
                   <button className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-lg">
                     Comece Agora
                   </button>
