@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Inter } from 'next/font/google'
 import { Outfit } from 'next/font/google'
-import { Mic, Brain, UniversalAccess, TrendingUp, ChevronRight, Star, VolumeUp, Eye, FileText } from 'lucide-react'
+import { Mic, Brain, TrendingUp,  Star,  Eye, FileText } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from 'next/link'
