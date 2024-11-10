@@ -24,7 +24,7 @@ Forneça recomendações práticas e específicas para a situação do usuário.
 export async function POST(request) {
   try {
     const llama = new LlamaAI({
-      apiKey: process.env.LLAMA_API_KEY,
+      apiKey: process.env.GROQ_API_KEY,
     });
 
     const { transcriptionHistory } = await request.json();

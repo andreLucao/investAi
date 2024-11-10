@@ -14,6 +14,7 @@ export default function FirstStage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [transcriptionHistory, setTranscriptionHistory] = useState([]);
+  const [llamaAnalysis, setLlamaAnalysis] = useState(null);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
 
@@ -50,12 +51,16 @@ export default function FirstStage() {
     }
   ];
 
+  useEffect(() => {
+    if (llamaAnalysis) {
+      console.log('LLaMA Analysis Updated:', llamaAnalysis);
+    }
+  }, [llamaAnalysis]);
+
   const sendToLlama = async (history) => {
     try {
-      // Ensure we have all questions and answers paired correctly
       const completeHistory = history.map(entry => ({
         ...entry,
-        // Find the matching question details from our questions array
         questionDetails: questions.find(q => q.id === entry.questionId) || {},
       }));
 
@@ -74,9 +79,20 @@ export default function FirstStage() {
       }
 
       const llamaResponse = await response.json();
-      console.log('LLaMA Analysis:', llamaResponse);
       
-      // Store enhanced data in localStorage
+      // Set the LLaMA analysis in state
+      setLlamaAnalysis(llamaResponse);
+      
+      // Log the complete response
+      console.log('Complete LLaMA Response:', llamaResponse);
+      
+      // Log specific parts of the analysis
+      console.log('Risk Assessment:', llamaResponse.riskAssessment);
+      console.log('Financial Concerns:', llamaResponse.financialConcerns);
+      console.log('Recommendations:', llamaResponse.recommendations);
+      console.log('Red Flags:', llamaResponse.redFlags);
+
+      // Store in localStorage
       localStorage.setItem('llamaParseStage1', JSON.stringify({
         timestamp: new Date().toISOString(),
         response: answers,
@@ -91,6 +107,7 @@ export default function FirstStage() {
 
     } catch (error) {
       console.error('Error sending to LLaMA:', error);
+      setLlamaAnalysis({ error: 'Failed to get analysis' });
     }
   };
 
@@ -98,7 +115,6 @@ export default function FirstStage() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Send to LLaMA before proceeding to next stage
       await sendToLlama(transcriptionHistory);
       router.push('/fluxo-inicial/segunda-etapa');
     }
@@ -159,7 +175,6 @@ export default function FirstStage() {
       const data = await response.json();
       const currentQuestion = questions[currentQuestionIndex];
       
-      // Create a more detailed entry for the transcription history
       const newEntry = {
         questionId: currentQuestion.id,
         question: currentQuestion.question,
@@ -200,7 +215,6 @@ export default function FirstStage() {
     try {
       const currentQuestion = questions[currentQuestionIndex];
       
-      // Create a more detailed entry for the transcription history
       const newEntry = {
         questionId: currentQuestion.id,
         question: currentQuestion.question,
@@ -310,6 +324,13 @@ export default function FirstStage() {
               {(isLoading || isRecording) && (
                 <div className="text-sm text-red-600">
                   {isRecording ? 'Gravando...' : 'Transcrevendo...'}
+                </div>
+              )}
+
+              {/* Add LLaMA analysis status indicator */}
+              {llamaAnalysis && (
+                <div className="text-sm text-gray-600">
+                  Analysis complete! Check console for details.
                 </div>
               )}
             </div>
