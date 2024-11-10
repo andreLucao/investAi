@@ -11,8 +11,38 @@ export default function FirstStage() {
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioURL, setAudioURL] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState({});
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
+
+  const questions = [
+    {
+      id: 'income',
+      question: 'Qual é sua renda média atual?',
+      subtitle: null
+    },
+    {
+      id: 'debts',
+      question: 'Atualmente você tem dívidas?',
+      subtitle: '(se sim, quanto)'
+    },
+    {
+      id: 'location',
+      question: 'Me fale de onde você é.',
+      subtitle: null
+    },
+    {
+      id: 'gambling',
+      question: 'Você já apostou ou tem costume de apostar?',
+      subtitle: null
+    },
+    {
+      id: 'children',
+      question: 'Você tem filhos?',
+      subtitle: null
+    }
+  ];
 
   const startRecording = async () => {
     try {
@@ -53,70 +83,14 @@ export default function FirstStage() {
   const handleAudioSubmission = async (blob) => {
     setIsLoading(true);
     try {
-      // Convert audio blob to base64
       const base64Audio = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result.split(',')[1]);
         reader.readAsDataURL(blob);
       });
 
-      const response = await fetch('/api/chatbot-marcos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content: "You are a helpful assistant that processes audio transcriptions and extracts key information about financial status, debts, location, gambling habits, and family status."
-            },
-            {
-              role: "user",
-              content: `Process this audio transcription and extract key information about: income, debts, location, gambling habits, and children. Audio content: ${base64Audio}`
-            }
-          ]
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const reader = response.body.getReader();
-      let accumulatedResponse = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = new TextDecoder().decode(value);
-        try {
-          // Attempt to parse the chunk as JSON
-          JSON.parse(chunk);
-          accumulatedResponse = chunk;
-        } catch {
-          // If it's not valid JSON, accumulate it
-          accumulatedResponse += chunk;
-        }
-      }
-
-      // Try to parse the final response
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(accumulatedResponse);
-      } catch (error) {
-        console.error('Error parsing response:', error);
-        parsedResponse = { error: 'Failed to parse response' };
-      }
-
-      // Store the parsed response in localStorage
-      localStorage.setItem('llamaParseStage1', JSON.stringify({
-        timestamp: new Date().toISOString(),
-        response: parsedResponse
-      }));
-
-      router.push('/fluxo-inicial/segunda-etapa');
+      const response = await processInput(base64Audio, true);
+      handleResponse(response);
     } catch (error) {
       console.error('Error processing audio:', error);
       alert('Erro ao processar o áudio. Por favor, tente novamente.');
@@ -131,62 +105,9 @@ export default function FirstStage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/chatbot-marcos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content: "You are a helpful assistant that processes user input and extracts key information about financial status, debts, location, gambling habits, and family status."
-            },
-            {
-              role: "user",
-              content: textInput
-            }
-          ]
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const reader = response.body.getReader();
-      let accumulatedResponse = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = new TextDecoder().decode(value);
-        try {
-          // Attempt to parse the chunk as JSON
-          JSON.parse(chunk);
-          accumulatedResponse = chunk;
-        } catch {
-          // If it's not valid JSON, accumulate it
-          accumulatedResponse += chunk;
-        }
-      }
-
-      // Try to parse the final response
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(accumulatedResponse);
-      } catch (error) {
-        console.error('Error parsing response:', error);
-        parsedResponse = { error: 'Failed to parse response' };
-      }
-
-      localStorage.setItem('llamaParseStage1', JSON.stringify({
-        timestamp: new Date().toISOString(),
-        response: parsedResponse
-      }));
-
-      router.push('/fluxo-inicial/segunda-etapa');
+      const response = await processInput(textInput, false);
+      handleResponse(response);
+      setTextInput('');
     } catch (error) {
       console.error('Error processing text:', error);
       alert('Erro ao processar o texto. Por favor, tente novamente.');
@@ -195,40 +116,95 @@ export default function FirstStage() {
     }
   };
 
+  const processInput = async (input, isAudio) => {
+    const response = await fetch('/api/chatbot-marcos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful assistant that processes user input and extracts key information about financial status, debts, location, gambling habits, and family status."
+          },
+          {
+            role: "user",
+            content: isAudio ? `Process this audio transcription: ${input}` : input
+          }
+        ]
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body.getReader();
+    let accumulatedResponse = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      const chunk = new TextDecoder().decode(value);
+      try {
+        JSON.parse(chunk);
+        accumulatedResponse = chunk;
+      } catch {
+        accumulatedResponse += chunk;
+      }
+    }
+
+    try {
+      return JSON.parse(accumulatedResponse);
+    } catch (error) {
+      console.error('Error parsing response:', error);
+      return { error: 'Failed to parse response' };
+    }
+  };
+
+  const handleResponse = (response) => {
+    const currentQuestion = questions[currentQuestionIndex];
+    setAnswers(prev => ({
+      ...prev,
+      [currentQuestion.id]: response
+    }));
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      // All questions answered, save to localStorage and redirect
+      localStorage.setItem('llamaParseStage1', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        response: answers
+      }));
+      router.push('/fluxo-inicial/segunda-etapa');
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (audioURL) {
         URL.revokeObjectURL(audioURL);
       }
-      // Clean up media stream on unmount
       if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
         mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
       }
     };
   }, [audioURL]);
 
+  const currentQuestion = questions[currentQuestionIndex];
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="bg-white rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.2)] max-w-md w-full space-y-8 text-center p-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]">
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">
-          Me manda um áudio me respondendo essas perguntas:
-        </h1>
         <div className="space-y-6">
           <div>
-            <p className="text-lg font-medium text-gray-900">Qual é sua renda média atual?</p>
-          </div>
-          <div>
-            <p className="text-lg font-medium text-gray-900">Atualmente você tem dívidas?</p>
-            <p className="text-sm text-gray-600 mt-1">(se sim, quanto)</p>
-          </div>
-          <div>
-            <p className="text-lg font-medium text-gray-900">Me fale de onde você é.</p>
-          </div>
-          <div>
-            <p className="text-lg font-medium text-gray-900">Você já apostou ou tem costume de apostar?</p>
-          </div>
-          <div>
-            <p className="text-lg font-medium text-gray-900">Você tem filhos?</p>
+            <p className="text-lg font-medium text-gray-900">{currentQuestion.question}</p>
+            {currentQuestion.subtitle && (
+              <p className="text-sm text-gray-600 mt-1">{currentQuestion.subtitle}</p>
+            )}
           </div>
           
           <form onSubmit={handleTextSubmit} className="mt-8">
@@ -238,7 +214,7 @@ export default function FirstStage() {
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
-                  placeholder="Ou digite sua resposta aqui..."
+                  placeholder="Digite sua resposta aqui..."
                   className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   disabled={isLoading || isRecording}
                 />
@@ -266,7 +242,6 @@ export default function FirstStage() {
                     isLoading || isRecording
                       ? 'bg-purple-400 cursor-not-allowed'
                       : 'bg-purple-600 hover:bg-purple-700'
-
                   } text-white`}
                 >
                   <Send className="w-4 h-4" />
@@ -279,6 +254,10 @@ export default function FirstStage() {
               )}
             </div>
           </form>
+          
+          <div className="text-sm text-gray-500">
+            Questão {currentQuestionIndex + 1} de {questions.length}
+          </div>
         </div>
       </div>
     </div>
