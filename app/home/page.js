@@ -32,7 +32,7 @@ export default function LandingPage() {
               <p className="text-xl md:text-2xl text-gray-600 mb-6">
                 Decisões financeiras personalizadas com IA
               </p>
-              <div className="flex items-center space-x-4 mb-6">
+              <div className="flex items-center space-x-4">
                 <Link href="/fluxo-inicial">
                   <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white">
                     Comece Agora
@@ -42,10 +42,6 @@ export default function LandingPage() {
                   Saiba Mais
                 </Button>
               </div>
-              <Button variant="ghost" size="sm" className="flex items-center" aria-label="Ativar entrada de voz">
-                <Mic className="mr-2" size={18} />
-                Entrada de Voz
-              </Button>
             </div>
             <div className="md:w-1/2">
               <div className="rounded-lg overflow-hidden shadow-lg w-full aspect-video">
@@ -64,7 +60,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Rest of the component remains the same... */}
         {/* Features Section */}
         <section className="bg-gray-50 py-16">
           <div className="container mx-auto px-4">
@@ -114,33 +109,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section className="bg-gray-50 py-16">
-          <div className="container mx-auto px-4">
-            <h2 className={`${outfit.className} text-3xl font-bold text-center mb-12`}>O que Nossos Clientes Dizem</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <TestimonialCard
-                avatar="/placeholder.svg?height=60&width=60"
-                name="Ana Silva"
-                rating={5}
-                review="A Investe a.í revolucionou minha abordagem financeira. As recomendações são incrivelmente precisas!"
-              />
-              <TestimonialCard
-                avatar="/placeholder.svg?height=60&width=60"
-                name="Carlos Mendes"
-                rating={4}
-                review="Como usuário com deficiência visual, aprecio muito a acessibilidade da plataforma. Finalmente posso gerenciar meus investimentos de forma independente."
-              />
-              <TestimonialCard
-                avatar="/placeholder.svg?height=60&width=60"
-                name="Juliana Costa"
-                rating={5}
-                review="A facilidade de uso e os insights personalizados me ajudaram a atingir meus objetivos financeiros mais rápido do que eu imaginava."
-              />
-            </div>
-          </div>
-        </section>
-
         {/* CTA Section */}
         <section className="container mx-auto px-4 py-16">
           <div className="bg-gradient-to-r from-purple-900 to-purple-400 rounded-lg shadow-xl p-8 md:p-12 text-center">
@@ -150,9 +118,6 @@ export default function LandingPage() {
             <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-white">
               Começar Gratuitamente
             </Button>
-            <div className="flex justify-center mt-6 space-x-4">
-              <AccessibilityFeature icon={<Mic size={18} />} text="Entrada de Voz" />
-            </div>
           </div>
         </section>
       </main>
