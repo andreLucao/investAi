@@ -21,7 +21,7 @@ const DASHBOARD_DATA = {
     { name: 'Dívidas', value: 300, emoji: '💳',p:20 },
     { name: 'Investimento', value: 150, emoji: '📈',p:10 },
   ],
-  colors: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e']
+  colors: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e'],
 };
 
 // Separate the pie chart calculation logic
@@ -201,7 +201,7 @@ export default function Dashboard() {
                       <span className="font-semibold text-slate-900">
                         {item.emoji} R$ {item.value.toLocaleString()} ({((item.value / total) * 100).toFixed(1)}%)
                       </span>
-                    </div>
+                      </div>
                     <div className="relative h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                       <div 
                         className="absolute h-full rounded-full transition-all duration-1000 ease-out"
@@ -212,6 +212,12 @@ export default function Dashboard() {
                         }}
                       />
                     </div>
+                    <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="bg-blue-700 group-hover:bg-blue-500 flex justify-content">
+                        Detalhes
+                      </Button>
                   </li>
                 ))}
               </ul>
