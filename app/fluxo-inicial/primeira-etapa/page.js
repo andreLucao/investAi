@@ -11,9 +11,11 @@ export default function FirstStage() {
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioURL, setAudioURL] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [transcriptionHistory, setTranscriptionHistory] = useState([]);
+  const [llamaAnalysis, setLlamaAnalysis] = useState(null);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
 
@@ -23,6 +25,12 @@ export default function FirstStage() {
       question: 'Qual é sua renda média atual?',
       subtitle: null,
       placeholder: 'Ex: Minha renda mensal é R$ 3.000'
+    },
+    {
+      id: 'children',
+      question: 'Você tem filhos?',
+      subtitle: null,
+      placeholder:'Ex: Sim, tenho 2 filhos'
     },
     {
       id: 'debts',
@@ -41,21 +49,20 @@ export default function FirstStage() {
       question: 'Você já apostou ou tem costume de apostar?',
       subtitle: '(se sim, por que você aposta?)',
       placeholder: 'Ex: Não, nunca apostei'
-    },
-    {
-      id: 'children',
-      question: 'Você tem filhos?',
-      subtitle: null,
-      placeholder:'Ex: Sim, tenho 2 filhos'
     }
+
   ];
+
+  useEffect(() => {
+    if (llamaAnalysis) {
+      console.log('LLaMA Analysis Updated:', llamaAnalysis);
+    }
+  }, [llamaAnalysis]);
 
   const sendToLlama = async (history) => {
     try {
-      // Ensure we have all questions and answers paired correctly
       const completeHistory = history.map(entry => ({
         ...entry,
-        // Find the matching question details from our questions array
         questionDetails: questions.find(q => q.id === entry.questionId) || {},
       }));
 
@@ -74,9 +81,9 @@ export default function FirstStage() {
       }
 
       const llamaResponse = await response.json();
-      console.log('LLaMA Analysis:', llamaResponse);
+      setLlamaAnalysis(llamaResponse);
+      console.log('Complete LLaMA Response:', llamaResponse);
       
-      // Store enhanced data in localStorage
       localStorage.setItem('llamaParseStage1', JSON.stringify({
         timestamp: new Date().toISOString(),
         response: answers,
@@ -91,14 +98,16 @@ export default function FirstStage() {
 
     } catch (error) {
       console.error('Error sending to LLaMA:', error);
+      setLlamaAnalysis({ error: 'Failed to get analysis' });
     }
   };
 
   const advanceToNextQuestion = async () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
+      setIsLoading(false);
+      setIsTranscribing(false);
     } else {
-      // Send to LLaMA before proceeding to next stage
       await sendToLlama(transcriptionHistory);
       router.push('/fluxo-inicial/segunda-etapa');
     }
@@ -141,7 +150,7 @@ export default function FirstStage() {
   };
 
   const handleAudioSubmission = async (blob) => {
-    setIsLoading(true);
+    setIsTranscribing(true);
     
     try {
       const formData = new FormData();
@@ -159,7 +168,6 @@ export default function FirstStage() {
       const data = await response.json();
       const currentQuestion = questions[currentQuestionIndex];
       
-      // Create a more detailed entry for the transcription history
       const newEntry = {
         questionId: currentQuestion.id,
         question: currentQuestion.question,
@@ -182,13 +190,13 @@ export default function FirstStage() {
 
       setTimeout(() => {
         advanceToNextQuestion();
-        setIsLoading(false);
       }, 1000);
 
     } catch (error) {
       console.error('Error processing audio:', error);
       alert('Erro ao processar o áudio. Por favor, tente novamente.');
-      setIsLoading(false);
+    } finally {
+      setIsTranscribing(false);
     }
   };
 
@@ -200,7 +208,6 @@ export default function FirstStage() {
     try {
       const currentQuestion = questions[currentQuestionIndex];
       
-      // Create a more detailed entry for the transcription history
       const newEntry = {
         questionId: currentQuestion.id,
         question: currentQuestion.question,
@@ -220,26 +227,14 @@ export default function FirstStage() {
       }));
 
       setTranscriptionHistory(prev => [...prev, newEntry]);
-
-      await advanceToNextQuestion();
       setTextInput('');
+      await advanceToNextQuestion();
     } catch (error) {
       console.error('Error processing text:', error);
       alert('Erro ao processar o texto. Por favor, tente novamente.');
-    } finally {
       setIsLoading(false);
     }
   };
-
-  const ProgressBar = ({ questions, color }) => (
-    <div className="relative h-3 w-full rounded-full bg-slate-100 overflow-hidden">
-      <div 
-        className={`absolute h-full rounded-full bg-gradient-to-r ${color} transition-all duration-1000 ease-out`}
-        style={{ width: `${questions.length}%` }}
-      />
-    </div>
-  );
-  
 
   useEffect(() => {
     return () => {
@@ -307,24 +302,36 @@ export default function FirstStage() {
                 </button>
               )}
 
-              {(isLoading || isRecording) && (
+              {isRecording && (
                 <div className="text-sm text-red-600">
-                  {isRecording ? 'Gravando...' : 'Transcrevendo...'}
+                  Gravando...
+                </div>
+              )}
+              
+              {isTranscribing && (
+                <div className="text-sm text-red-600">
+                  Transcrevendo...
+                </div>
+              )}
+
+              {llamaAnalysis && (
+                <div className="text-sm text-gray-600">
+                  Analysis complete! Check console for details.
                 </div>
               )}
             </div>
           </form>
           
           <div className="text-sm text-gray-500">
-            Questão {currentQuestionIndex + 1} de {questions.length}
-          <div className="mb-4">
-            <div className="h-2 bg-gray-200 rounded-full">
-              <div 
-                className="h-full bg-purple-500 rounded-full transition-all duration-300 ease-in-out mt-5"
-                style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-              ></div>
+            Questão {currentQuestionIndex} de {questions.length}
+            <div className="mb-4">
+              <div className="h-2 bg-gray-200 rounded-full">
+                <div 
+                  className="h-full bg-purple-500 rounded-full transition-all duration-300 ease-in-out mt-5"
+                  style={{ width: `${((currentQuestionIndex) / questions.length) * 100}%` }}
+                ></div>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </div>

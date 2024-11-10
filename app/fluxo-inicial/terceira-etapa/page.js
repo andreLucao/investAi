@@ -30,9 +30,9 @@ export default function page3() {
             <p className="text-lg font-medium text-black">Sua renda se divide nessas categorias:</p>
           </div>
           <div>
-            <p>categoria 1</p>
-            <p>categoria 2</p>
-            <p>categoria 3</p>
+            <p>💰 Gastos Fixos: <strong>55%</strong></p>
+            <p>⚽ Lazer: <strong>15%</strong></p>
+            <p>💳 Dívida: <strong>30%</strong></p>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">

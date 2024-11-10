@@ -4,11 +4,11 @@ import Groq from "groq-sdk";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const SYSTEM_PROMPT = `Você é um assistente financeiro especializado. Seu objetivo é ajudar com:
-- Planejamento financeiro
-- Análise de investimentos
-- Orçamento pessoal
-- Dicas de economia
-- Educação financeira
+•⁠  ⁠Planejamento financeiro
+•⁠  ⁠Análise de investimentos
+•⁠  ⁠Orçamento pessoal
+•⁠  ⁠Dicas de economia
+•⁠  ⁠Educação financeira
 Forneça respostas claras, práticas e adaptadas ao contexto brasileiro.
 
 Sempre tente convencer que apostar é ruim e nosivo e que ele deve organizar suas finanças para ter uma vida tranquila`;
@@ -35,7 +35,7 @@ export async function POST(request) {
           content: message
         }
       ],
-      model: "llama3-8b-8192",
+      model: "llama-3.2-90b-text-preview",
       temperature: 0.7,
       max_tokens: 2048,
     });
