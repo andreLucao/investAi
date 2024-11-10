@@ -9,7 +9,6 @@ import { Outfit } from 'next/font/google'
 
 const outfit = Outfit({ subsets: ['latin'] })
 
-// Move data to a separate constant object for better organization
 const DASHBOARD_DATA = {
   goals: [
     { name: 'Viagem', progress: 75, color: 'from-blue-500 to-blue-600',goal:'20.000',now:'15.000',emoji: '🛬'},
@@ -24,7 +23,6 @@ const DASHBOARD_DATA = {
   colors: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e'],
 };
 
-// Separate the pie chart calculation logic
 const calculatePieSlices = (data) => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
   let currentAngle = 0;
@@ -48,7 +46,6 @@ const calculatePieSlices = (data) => {
   });
 };
 
-// Separate components for better organization
 const ProgressBar = ({ progress, color }) => (
   <div className="relative h-3 w-full rounded-full bg-slate-100 overflow-hidden">
     <div 
@@ -104,11 +101,30 @@ const PieChart = ({ data, hoveredSlice, setHoveredSlice }) => {
   );
 };
 
+const Modal = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg max-w-[425px] w-full mx-4 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
+          ✕
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 export default function Dashboard() {
   const router = useRouter();
   const [progress, setProgress] = useState(DASHBOARD_DATA.goals.map(() => 0));
   const [hoveredSlice, setHoveredSlice] = useState(null);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const total = DASHBOARD_DATA.finances.reduce((sum, item) => sum + item.value, 0);
 
@@ -201,7 +217,7 @@ export default function Dashboard() {
                       <span className="font-semibold text-slate-900">
                         {item.emoji} R$ {item.value.toLocaleString()} ({((item.value / total) * 100).toFixed(1)}%)
                       </span>
-                      </div>
+                    </div>
                     <div className="relative h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                       <div 
                         className="absolute h-full rounded-full transition-all duration-1000 ease-out"
@@ -212,15 +228,45 @@ export default function Dashboard() {
                         }}
                       />
                     </div>
-                    <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="bg-blue-700 group-hover:bg-blue-500 flex justify-content">
-                        Detalhes
-                      </Button>
                   </li>
                 ))}
               </ul>
+              <div className="mt-6 flex justify-center">
+                <Button 
+                  variant="default"
+                  size="lg"
+                  onClick={() => setIsModalOpen(true)}
+                  className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-medium px-8 py-2 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 m-10"
+                >
+                  Veja a diferença entre investir e apostar!
+                </Button>
+              </div>
+
+              <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <div className="p-6">
+                  <h2 className="text-2xl font-semibold mb-6">Investir vs Apostar</h2>
+                  <div className="space-y-4">
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-green-700 mb-2">Investir 📈</h3>
+                      <ul className="list-disc list-inside text-green-600 space-y-2">
+                        <li>Crescimento consistente ao longo do tempo</li>
+                        <li>Risco calculado e gerenciável</li>
+                        <li>Baseado em análise e estratégia</li>
+                        <li>Construção de patrimônio a longo prazo</li>
+                      </ul>
+                    </div>
+                    <div className="bg-red-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-red-700 mb-2">Apostar 🎲</h3>
+                      <ul className="list-disc list-inside text-red-600 space-y-2">
+                        <li>Alta volatilidade e risco de perda total</li>
+                        <li>Baseado em sorte e chance</li>
+                        <li>Sem controle sobre o resultado</li>
+                        <li>Possibilidade de comportamento compulsivo</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </Modal>
             </CardContent>
           </Card>
         </div>
