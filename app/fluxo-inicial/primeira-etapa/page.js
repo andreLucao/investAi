@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -13,6 +14,8 @@ export default function FirstStage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [transcriptionResult, setTranscriptionResult] = useState('');
+  const [showTranscriptionPreview, setShowTranscriptionPreview] = useState(false);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
 
@@ -44,6 +47,20 @@ export default function FirstStage() {
     }
   ];
 
+  const advanceToNextQuestion = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setShowTranscriptionPreview(false);
+      setTranscriptionResult('');
+    } else {
+      localStorage.setItem('llamaParseStage1', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        response: answers
+      }));
+      router.push('/fluxo-inicial/segunda-etapa');
+    }
+  };
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -66,6 +83,8 @@ export default function FirstStage() {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
+      setShowTranscriptionPreview(false);
+      setTranscriptionResult('');
     } catch (error) {
       console.error('Error accessing microphone:', error);
       alert('Error accessing microphone. Please make sure you have granted microphone permissions.');
@@ -82,17 +101,35 @@ export default function FirstStage() {
 
   const handleAudioSubmission = async (blob) => {
     setIsLoading(true);
+    setTranscriptionResult('Transcribing...');
+    setShowTranscriptionPreview(true);
+    
     try {
-      const base64Audio = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(',')[1]);
-        reader.readAsDataURL(blob);
+      const formData = new FormData();
+      formData.append('audio', blob, 'audio.webm');
+
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData,
       });
 
-      const response = await processInput(base64Audio, true);
-      handleResponse(response);
+      if (!response.ok) {
+        throw new Error('Transcription failed');
+      }
+
+      const data = await response.json();
+      setTranscriptionResult(data.text);
+      
+      // Store the transcribed text in answers
+      const currentQuestion = questions[currentQuestionIndex];
+      setAnswers(prev => ({
+        ...prev,
+        [currentQuestion.id]: data.text
+      }));
+
     } catch (error) {
       console.error('Error processing audio:', error);
+      setTranscriptionResult('Error: Failed to transcribe audio');
       alert('Erro ao processar o áudio. Por favor, tente novamente.');
     } finally {
       setIsLoading(false);
@@ -105,8 +142,13 @@ export default function FirstStage() {
 
     setIsLoading(true);
     try {
-      const response = await processInput(textInput, false);
-      handleResponse(response);
+      const currentQuestion = questions[currentQuestionIndex];
+      setAnswers(prev => ({
+        ...prev,
+        [currentQuestion.id]: textInput
+      }));
+
+      advanceToNextQuestion();
       setTextInput('');
     } catch (error) {
       console.error('Error processing text:', error);
@@ -116,71 +158,8 @@ export default function FirstStage() {
     }
   };
 
-  const processInput = async (input, isAudio) => {
-    const response = await fetch('/api/chatbot-marcos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful assistant that processes user input and extracts key information about financial status, debts, location, gambling habits, and family status."
-          },
-          {
-            role: "user",
-            content: isAudio ? `Process this audio transcription: ${input}` : input
-          }
-        ]
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const reader = response.body.getReader();
-    let accumulatedResponse = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      
-      const chunk = new TextDecoder().decode(value);
-      try {
-        JSON.parse(chunk);
-        accumulatedResponse = chunk;
-      } catch {
-        accumulatedResponse += chunk;
-      }
-    }
-
-    try {
-      return JSON.parse(accumulatedResponse);
-    } catch (error) {
-      console.error('Error parsing response:', error);
-      return { error: 'Failed to parse response' };
-    }
-  };
-
-  const handleResponse = (response) => {
-    const currentQuestion = questions[currentQuestionIndex];
-    setAnswers(prev => ({
-      ...prev,
-      [currentQuestion.id]: response
-    }));
-
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } else {
-      // All questions answered, save to localStorage and redirect
-      localStorage.setItem('llamaParseStage1', JSON.stringify({
-        timestamp: new Date().toISOString(),
-        response: answers
-      }));
-      router.push('/fluxo-inicial/segunda-etapa');
-    }
+  const handleConfirmTranscription = () => {
+    advanceToNextQuestion();
   };
 
   useEffect(() => {
@@ -206,6 +185,30 @@ export default function FirstStage() {
               <p className="text-sm text-gray-600 mt-1">{currentQuestion.subtitle}</p>
             )}
           </div>
+
+          {/* Transcription Preview */}
+          {showTranscriptionPreview && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm font-medium text-gray-700 mb-2">Transcription:</p>
+              <p className="text-sm text-gray-600">{transcriptionResult}</p>
+              {transcriptionResult && transcriptionResult !== 'Transcribing...' && !transcriptionResult.includes('Error') && (
+                <div className="mt-4 space-x-4">
+                  <button
+                    onClick={handleConfirmTranscription}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    Confirm & Continue
+                  </button>
+                  <button
+                    onClick={startRecording}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Record Again
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
           
           <form onSubmit={handleTextSubmit} className="mt-8">
             <div className="space-y-4">
