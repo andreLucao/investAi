@@ -10,7 +10,7 @@ export default function FinancialAssistant() {
 
   const suggestions = [
     "Como posso começar a investir com pouco dinheiro?",
-    "Quais são as melhores estratégias para sair das dívidas?",
+    "Quais são as melhores estratégias para sair das dívidas?", 
     "Como criar um plano de aposentadoria eficiente?"
   ];
 
