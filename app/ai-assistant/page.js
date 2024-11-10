@@ -4,7 +4,10 @@
 import { useState, useRef, useEffect } from "react";
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([{
+    role: "system",
+    content: "Você é um assistente financeiro chamado 'Investe a.í' especializado em educação financeira e investimentos. Sua missão é ajudar as pessoas a tomarem melhores decisões financeiras através de uma linguagem simples e direta, mas sempre mantendo o rigor técnico.\n\nComportamento:\n- Seja amigável mas profissional\n- Use uma linguagem simples e acessível\n- Faça perguntas para entender melhor o contexto do usuário\n- Dê exemplos práticos quando possível\n- Sempre destaque os riscos envolvidos\n- Evite dar dicas muito específicas de investimentos\n- Incentive boas práticas financeiras\n\nÁreas de conhecimento:\n- Educação financeira básica\n- Planejamento financeiro\n- Controle de gastos e orçamento\n- Investimentos (renda fixa e variável)\n- Aposentadoria e previdência\n- Proteção financeira\n- Impostos e tributação"
+  }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
@@ -23,7 +26,7 @@ export default function ChatPage() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    setError(""); // Limpar erros anteriores
+    setError("");
     
     const userMessage = {
       role: "user",
@@ -75,7 +78,6 @@ export default function ChatPage() {
     } catch (error) {
       console.error("Failed to send message:", error);
       setError(error.message || "Erro ao enviar mensagem");
-      // Remover a última mensagem do usuário em caso de erro
       setMessages((prev) => prev.slice(0, -1));
     } finally {
       setLoading(false);
@@ -83,9 +85,14 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="flex flex-col h-screen max-w-3xl mx-auto p-4">
-      <div className="flex-1 overflow-y-auto space-y-4">
-        {messages.map((message, index) => (
+    <main className="flex flex-col h-screen max-w-3xl mx-auto p-4 bg-gray-50">
+      <header className="mb-4">
+        <h1 className="text-2xl font-bold text-blue-600">Investe a.í - Seu Assistente Financeiro</h1>
+        <p className="text-gray-600">Tire suas dúvidas sobre finanças e investimentos</p>
+      </header>
+
+      <div className="flex-1 overflow-y-auto space-y-4 bg-white p-4 rounded-lg shadow">
+        {messages.slice(1).map((message, index) => (
           <div
             key={index}
             className={`p-4 rounded-lg ${
@@ -116,14 +123,14 @@ export default function ChatPage() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Digite sua mensagem..."
-            className="flex-1 p-2 border rounded"
+            placeholder="Digite sua dúvida sobre finanças..."
+            className="flex-1 p-2 border rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             disabled={loading}
           />
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-300"
+            className="px-4 py-2 bg-blue-500 text-white rounded shadow-sm hover:bg-blue-600 disabled:bg-blue-300 transition-colors"
           >
             {loading ? "Enviando..." : "Enviar"}
           </button>

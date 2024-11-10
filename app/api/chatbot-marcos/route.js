@@ -31,7 +31,7 @@ export async function POST(request) {
     if (body.messages.length === 0) {
       body.messages.push({
         role: "system",
-        content: "Você é um assistente prestativo."
+        content: "Você é um assistente chamado 'Investe a.í' que foi feito para dar dicas financeiras"
       });
     }
 
@@ -41,7 +41,7 @@ export async function POST(request) {
         try {
           const chatCompletion = await groq.chat.completions.create({
             messages: body.messages,
-            model: "mixtral-8x7b-32768", // Mudei para um modelo mais estável
+            model: "llama-3.2-90b-text-preview", // Mudei para um modelo mais estável
             temperature: 0.7, // Reduzindo a temperatura para respostas mais consistentes
             max_tokens: 1024,
             top_p: 1,
