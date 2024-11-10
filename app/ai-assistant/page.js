@@ -1,7 +1,7 @@
-// app/chatbot-marcos/page.js
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { CodeGPTPlus } from 'judini';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([{
@@ -13,6 +13,10 @@ export default function ChatPage() {
   const [streamingContent, setStreamingContent] = useState("");
   const [error, setError] = useState("");
   const messagesEndRef = useRef(null);
+  
+  const codegpt = new CodeGPTPlus({ 
+    apiKey: process.env.NEXT_PUBLIC_CODEGPT_API_KEY 
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -21,6 +25,12 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, streamingContent]);
+
+  const handleStreamChunk = (chunk) => {
+    // Just return the chunk as is, without any parsing
+    console.log('Raw chunk:', chunk);
+    return chunk;
+  };
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -38,39 +48,65 @@ export default function ChatPage() {
     setLoading(true);
     setStreamingContent("");
 
+    let fullResponse = '';
+
     try {
-      const response = await fetch("/api/chatbot-marcos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-        }),
+      // Create headers for fetch request
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CODEGPT_API_KEY}`
+      };
+
+      // Create request body
+      const body = {
+        messages: [...messages, userMessage],
+        agentId: process.env.NEXT_PUBLIC_CODEGPT_AGENT_ID,
+        stream: true
+      };
+
+      // Make fetch request directly instead of using SDK
+      const response = await fetch('https://api.codegpt.co/v1/chat/completions', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao processar a requisição');
-      }
-
+      // Create reader for streaming response
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let accumulatedContent = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
+        // Decode the chunk and log it
         const chunk = decoder.decode(value);
-        accumulatedContent += chunk;
-        setStreamingContent(accumulatedContent);
+        console.log('Received chunk:', chunk);
+        
+        // Split the chunk by newlines to handle multiple events
+        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+        
+        for (const line of lines) {
+          if (line.includes('[DONE]')) continue;
+          
+          // Remove 'data: ' prefix if it exists
+          const data = line.replace(/^data: /, '').trim();
+          console.log('Processed data:', data);
+          
+          if (data) {
+            fullResponse += data + '\n';
+            setStreamingContent(fullResponse);
+          }
+        }
       }
 
-      if (accumulatedContent) {
+      if (fullResponse) {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: accumulatedContent },
+          { 
+            role: "assistant", 
+            content: fullResponse
+          },
         ]);
       }
       setStreamingContent("");
@@ -105,7 +141,7 @@ export default function ChatPage() {
           </div>
         ))}
         {streamingContent && (
-          <div className="bg-gray-100 p-4 rounded-lg max-w-[80%]">
+          <div className="bg-gray-100 p-4 rounded-lg max-w-[80%] font-mono text-sm">
             <p className="whitespace-pre-wrap">{streamingContent}</p>
           </div>
         )}
