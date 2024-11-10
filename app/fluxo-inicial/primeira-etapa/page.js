@@ -73,7 +73,7 @@ export default function FirstStage() {
             },
             {
               role: "user",
-              content: `Process this audio transcription and extract key information about: income, debts, location, gambling habits, and children. Audio content: ${base64Audio}`
+              content: Process this audio transcription and extract key information about: income, debts, location, gambling habits, and children. Audio content: ${base64Audio}
             }
           ]
         }),
@@ -175,53 +175,45 @@ export default function FirstStage() {
   }, [audioURL]);
 
   return (
-<div className="min-h-screen flex items-center justify-center p-6">
-      <div className="bg-white rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.2)] max-w-md w-full space-y-8 text-center p-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]">
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8 text-center">
+        <h1 className="text-2xl font-bold text-black mb-8">
           Me manda um audio me respondendo essas perguntas:
         </h1>
         <div className="space-y-6">
-          <div className="transform transition-all duration-300 hover:scale-102">
-            <p className="text-lg font-medium text-gray-800">Qual é sua renda media atual?</p>
+          <div>
+            <p className="text-lg font-medium text-black">Qual é sua renda media atual?</p>
           </div>
-          <div className="transform transition-all duration-300 hover:scale-102">
-            <p className="text-lg font-medium text-gray-800">Atualmente voce tem dividas?</p>
-            <p className="text-sm text-gray-500 mt-1">(se sim, quanto)</p>
+          <div>
+            <p className="text-lg font-medium text-black">Atualmente voce tem dividas?</p>
+            <p className="text-sm text-gray-600 mt-1">(se sim, quanto)</p>
           </div>
-          <div className="transform transition-all duration-300 hover:scale-102">
-            <p className="text-lg font-medium text-gray-800">Me fale de onde você é.</p>
+          <div>
+            <p className="text-lg font-medium text-black">Me fale de onde você é.</p>
           </div>
-          <div className="transform transition-all duration-300 hover:scale-102">
-            <p className="text-lg font-medium text-gray-800">Voce ja apostou ou tem costume de apostar?</p>
+          <div>
+            <p className="text-lg font-medium text-black">Voce ja apostou ou tem costume de apostar?</p>
           </div>
-          <div className="transform transition-all duration-300 hover:scale-102">
-            <p className="text-lg font-medium text-gray-800">Vc tem filhos?</p>
+          <div>
+            <p className="text-lg font-medium text-black">Vc tem filhos?</p>
           </div>
           
           <form onSubmit={handleTextSubmit} className="mt-8">
             <div className="space-y-4">
-              <div className="relative flex items-center group">
+              <div className="relative flex items-center">
                 <input
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   placeholder="Ou digite sua resposta aqui..."
-<<<<<<< HEAD
-                  className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-gray-50 group-hover:bg-white"
-=======
                   className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isLoading}
->>>>>>> cf2dcb10afe7485aacd30f4ddb40a615063c2de7
                 />
                 <button
                   type="button"
                   onClick={isRecording ? stopRecording : startRecording}
-<<<<<<< HEAD
-                  className="absolute right-2 p-2 text-gray-500 hover:text-purple-600 transition-colors duration-300"
-=======
                   className="absolute right-2 p-2 text-gray-500 hover:text-gray-700 transition-colors"
                   disabled={isLoading}
->>>>>>> cf2dcb10afe7485aacd30f4ddb40a615063c2de7
                 >
                   {!isRecording ? (
                     <Mic className="w-5 h-5" />
@@ -234,17 +226,10 @@ export default function FirstStage() {
               {textInput.trim() && (
                 <button
                   type="submit"
-<<<<<<< HEAD
-                  className="w-full flex items-center justify-center gap-2 bg-purple-600 text-white rounded-full py-3 px-4 hover:bg-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <Send className="w-4 h-4" />
-                  Próximo
-=======
                   className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white rounded-full py-3 px-4 hover:bg-blue-700 transition-colors"
                 >
                   <Send className="w-4 h-4" />
                   Enviar
->>>>>>> cf2dcb10afe7485aacd30f4ddb40a615063c2de7
                 </button>
               )}
             </div>
