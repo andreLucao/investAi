@@ -1,181 +1,81 @@
-"use client";
- 
-import { useState, useRef, useEffect } from "react";
- 
-export default function ChatPage() {
-  const [messages, setMessages] = useState([{
-    role: "system",
-    content: "Você é um assistente financeiro chamado 'Investe a.í' especializado em educação financeira e investimentos. Sua missão é ajudar as pessoas a tomarem melhores decisões financeiras através de uma linguagem simples e direta, mas sempre mantendo o rigor técnico.\n\nComportamento:\n- Seja amigável mas profissional\n- Use uma linguagem simples e acessível\n- Faça perguntas para entender melhor o contexto do usuário\n- Dê exemplos práticos quando possível\n- Sempre destaque os riscos envolvidos\n- Evite dar dicas muito específicas de investimentos\n- Incentive boas práticas financeiras\n\nÁreas de conhecimento:\n- Educação financeira básica\n- Planejamento financeiro\n- Controle de gastos e orçamento\n- Investimentos (renda fixa e variável)\n- Aposentadoria e previdência\n- Proteção financeira\n- Impostos e tributação"
-  }]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [streamingContent, setStreamingContent] = useState("");
-  const [error, setError] = useState("");
-  const messagesEndRef = useRef(null);
+// app/ai-assistant/page.js
+'use client';
+import { useState } from 'react';
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+export default function FinancialAssistant() {
+  const [message, setMessage] = useState('');
+  const [response, setResponse] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, streamingContent]);
-
-  const sendMessage = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
-    setError("");
-    
-    const userMessage = {
-      role: "user",
-      content: input,
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setLoading(true);
-    setStreamingContent("");
-    let fullResponse = '';
-    
+    setIsLoading(true);
+    setError('');
+
     try {
-      console.log('Sending message:', {
-        messageCount: messages.length + 1,
-        lastMessage: input,
-      });
-      
-      const response = await fetch('/api/chat', {
+      const res = await fetch('/api/financial-assistant', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-        }),
+        body: JSON.stringify({ message }),
       });
-      
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error data:', errorData);
-        throw new Error(errorData.message || errorData.error || `HTTP error! status: ${response.status}`);
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Algo deu errado');
       }
 
-      const contentType = response.headers.get('Content-Type');
-      console.log('Response content type:', contentType);
-
-      if (contentType?.includes('application/json')) {
-        const data = await response.json();
-        console.log('JSON response:', data);
-        fullResponse = data.content || JSON.stringify(data);
-      } else {
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const chunk = decoder.decode(value);
-          console.log('Received chunk:', chunk);
-          
-          const lines = chunk.split('\n').filter(line => line.trim() !== '');
-          
-          for (const line of lines) {
-            if (line.includes('[DONE]')) continue;
-            
-            const data = line.replace(/^data: /, '').trim();
-            
-            try {
-              if (data) {
-                const jsonData = JSON.parse(data);
-                const content = jsonData.choices?.[0]?.delta?.content || jsonData.content || '';
-                if (content) {
-                  fullResponse += content;
-                  setStreamingContent(fullResponse);
-                }
-              }
-            } catch (e) {
-              console.warn('Failed to parse chunk as JSON:', e);
-              if (data && !data.includes('[DONE]')) {
-                fullResponse += data;
-                setStreamingContent(fullResponse);
-              }
-            }
-          }
-        }
-      }
-
-      if (fullResponse) {
-        setMessages((prev) => [
-          ...prev,
-          { 
-            role: "assistant", 
-            content: fullResponse
-          },
-        ]);
-      }
-      setStreamingContent("");
-      
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      setError(`Erro ao enviar mensagem: ${error.message}`);
-      setMessages((prev) => prev.slice(0, -1));
+      setResponse(data.response);
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <main className="flex flex-col h-screen max-w-3xl mx-auto p-4 bg-gray-50">
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold text-blue-600">Investe a.í - Seu Assistente Financeiro</h1>
-        <p className="text-gray-600">Tire suas dúvidas sobre finanças e investimentos</p>
-      </header>
-
-      <div className="flex-1 overflow-y-auto space-y-4 bg-white p-4 rounded-lg shadow">
-        {messages.slice(1).map((message, index) => (
-          <div
-            key={index}
-            className={`p-4 rounded-lg ${
-              message.role === "user"
-                ? "bg-blue-100 ml-auto max-w-[80%]"
-                : "bg-gray-100 max-w-[80%]"
-            }`}
-          >
-            <p className="whitespace-pre-wrap">{message.content}</p>
-          </div>
-        ))}
-        {streamingContent && (
-          <div className="bg-gray-100 p-4 rounded-lg max-w-[80%]">
-            <p className="whitespace-pre-wrap">{streamingContent}</p>
-          </div>
-        )}
-        {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <form onSubmit={sendMessage} className="mt-4">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Digite sua dúvida sobre finanças..."
-            className="flex-1 p-2 border rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            disabled={loading}
+    <div className="max-w-4xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Assistente Financeiro</h1>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="message" className="block mb-2">
+            Como posso ajudar com suas finanças hoje?
+          </label>
+          <textarea
+            id="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md"
+            rows={4}
+            placeholder="Ex: Como criar um orçamento mensal?"
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-4 py-2 bg-blue-500 text-white rounded shadow-sm hover:bg-blue-600 disabled:bg-blue-300 transition-colors"
-          >
-            {loading ? "Enviando..." : "Enviar"}
-          </button>
         </div>
+
+        <button
+          type="submit"
+          disabled={isLoading || !message.trim()}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:bg-gray-400"
+        >
+          {isLoading ? 'Processando...' : 'Enviar'}
+        </button>
       </form>
-    </main>
+
+      {error && (
+        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-md">
+          {error}
+        </div>
+      )}
+
+      {response && (
+        <div className="mt-4 p-4 bg-gray-100 rounded-md">
+          <h2 className="font-semibold mb-2">Resposta:</h2>
+          <p className="whitespace-pre-wrap">{response}</p>
+        </div>
+      )}
+    </div>
   );
 }
