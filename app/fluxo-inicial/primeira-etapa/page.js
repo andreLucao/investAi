@@ -323,12 +323,12 @@ export default function FirstStage() {
           </form>
           
           <div className="text-sm text-gray-500">
-            Questão {currentQuestionIndex + 1} de {questions.length}
+            Questão {currentQuestionIndex} de {questions.length}
             <div className="mb-4">
               <div className="h-2 bg-gray-200 rounded-full">
                 <div 
                   className="h-full bg-purple-500 rounded-full transition-all duration-300 ease-in-out mt-5"
-                  style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                  style={{ width: `${((currentQuestionIndex) / questions.length) * 100}%` }}
                 ></div>
               </div>
             </div>
