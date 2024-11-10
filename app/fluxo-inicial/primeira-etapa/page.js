@@ -33,7 +33,7 @@ export default function FirstStage() {
     {
       id: 'location',
       question: 'Me fale de onde você é.',
-      subtitle: null
+      subtitle: '(Isto nos ajudara a calcular mais precisamente os seus custos)'
     },
     {
       id: 'gambling',
