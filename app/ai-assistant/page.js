@@ -8,7 +8,7 @@ export default function FinancialAssistant() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => { 
     e.preventDefault();
     setIsLoading(true);
     setError('');
