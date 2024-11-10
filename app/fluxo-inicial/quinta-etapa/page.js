@@ -7,8 +7,8 @@ import { Outfit } from 'next/font/google'
 const outfit = Outfit({ subsets: ['latin'] })
 export default function LoadingPage() {
   const router = useRouter()
-  //shogo
-
+  
+//shogo
   useEffect(() => {
     const timer = setTimeout(() => {
       window.location.href = '/dashboard' // Changed to use client-side navigation
