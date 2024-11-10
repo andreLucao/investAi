@@ -59,7 +59,7 @@ export async function POST(request) {
           content: `Here are the questionnaire responses to analyze:\n\n${questionsContext}`
         }
       ],
-      model: 'llama-2-70b-chat',  // Updated model name
+      model: 'llama-3.2-90b-text-preview',  // Updated model name
       temperature: 0.7,
       max_tokens: 1000
     };
