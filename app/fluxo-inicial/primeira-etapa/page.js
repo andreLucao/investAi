@@ -38,7 +38,7 @@ export default function FirstStage() {
     {
       id: 'gambling',
       question: 'Você já apostou ou tem costume de apostar?',
-      subtitle: null
+      subtitle: '(se sim, por que você aposta?)'
     },
     {
       id: 'children',
