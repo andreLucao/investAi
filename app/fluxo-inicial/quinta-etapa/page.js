@@ -10,7 +10,7 @@ export default function LoadingPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       window.location.href = '/dashboard' // Changed to use client-side navigation
-    }, 5000)
+    }, 50)
 
     return () => clearTimeout(timer)
   }, [])  // Removed router from dependencies since we're using window.location
