@@ -58,8 +58,8 @@ export default function page1() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 text-center">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="bg-white rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.2)] max-w-md w-full space-y-8 text-center p-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]">
         <h1 className="text-2xl font-bold text-black mb-8">
           Me manda um audio me respondendo essas perguntas:
         </h1>
@@ -88,7 +88,7 @@ export default function page1() {
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Ou digite sua resposta aqui..."
-                className="w-full px-6 py-4 pr-14 border border-gray-200 rounded-full bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-600 placeholder-gray-400"
+                className="w-full px-6 py-4 pr-14 border border-gray-200 rounded-full bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-600 placeholder-gray-400"
               />
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                 {!isRecording ? (
@@ -114,7 +114,7 @@ export default function page1() {
             {textInput.trim() && (
               <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 bg-purple-900 text-white rounded-md py-2 px-4 hover:bg-purple-500 transition-colors mt-4"
+              className="w-full flex items-center justify-center gap-2 bg-purple-600 text-white rounded-full py-3 px-4 hover:bg-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg mt-5"
             >
               <Send className="w-4 h-4" />
               Enviar

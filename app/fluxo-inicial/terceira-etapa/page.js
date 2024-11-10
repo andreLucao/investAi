@@ -14,8 +14,8 @@ export default function page3() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 text-center">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="bg-white rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.2)] max-w-md w-full space-y-8 text-center p-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]">
         <h1 className="text-2xl font-bold text-black mb-8">
           O que você acha de criarmos alguns objetivos?
         </h1>
@@ -38,7 +38,7 @@ export default function page3() {
           <form onSubmit={handleSubmit} className="space-y-4">
           <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 bg-purple-900 text-white rounded-md py-2 px-4 hover:bg-purple-500 transition-colors "
+              className="w-full flex items-center justify-center gap-2 bg-purple-600 text-white rounded-full py-3 px-4 hover:bg-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg "
             >
               <Send className="w-4 h-4" />
               Próximo
