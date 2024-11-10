@@ -13,6 +13,15 @@ const nextConfig = {
       }
     ]
   },
+  async redirects() {
+    return [
+      {
+        source: '/fluxo-principal',
+        destination: '/fluxo-principal/primeira-etapa',
+        permanent: true,  // use true para redirecionamento 308, ou false para 307
+      },
+    ];
+  },
   experimental: {
     serverActions: true,
   },
