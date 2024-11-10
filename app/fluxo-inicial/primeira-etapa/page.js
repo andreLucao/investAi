@@ -26,6 +26,12 @@ export default function FirstStage() {
       placeholder: 'Ex: Minha renda mensal é R$ 3.000'
     },
     {
+      id: 'children',
+      question: 'Você tem filhos?',
+      subtitle: null,
+      placeholder:'Ex: Sim, tenho 2 filhos'
+    },
+    {
       id: 'debts',
       question: 'Atualmente você tem dívidas?',
       subtitle: '(se sim, quanto)',
@@ -42,13 +48,8 @@ export default function FirstStage() {
       question: 'Você já apostou ou tem costume de apostar?',
       subtitle: '(se sim, por que você aposta?)',
       placeholder: 'Ex: Não, nunca apostei'
-    },
-    {
-      id: 'children',
-      question: 'Você tem filhos?',
-      subtitle: null,
-      placeholder:'Ex: Sim, tenho 2 filhos'
     }
+
   ];
 
   useEffect(() => {
