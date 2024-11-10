@@ -50,20 +50,56 @@ export default function FirstStage() {
     }
   ];
 
-  const getCurrentPlaceholder = () => {
-    const currentQuestion = questions[currentQuestionIndex];
-    return placeholders[currentQuestion.id];
-  };
-  
-  const advanceToNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } else {
+  const sendToLlama = async (history) => {
+    try {
+      // Ensure we have all questions and answers paired correctly
+      const completeHistory = history.map(entry => ({
+        ...entry,
+        // Find the matching question details from our questions array
+        questionDetails: questions.find(q => q.id === entry.questionId) || {},
+      }));
+
+      const response = await fetch('/api/llama', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          transcriptionHistory: completeHistory
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process with LLaMA');
+      }
+
+      const llamaResponse = await response.json();
+      console.log('LLaMA Analysis:', llamaResponse);
+      
+      // Store enhanced data in localStorage
       localStorage.setItem('llamaParseStage1', JSON.stringify({
         timestamp: new Date().toISOString(),
         response: answers,
-        transcriptionHistory
+        transcriptionHistory: completeHistory,
+        llamaAnalysis: llamaResponse,
+        questionnaire: {
+          totalQuestions: questions.length,
+          completedQuestions: history.length,
+          questionTopics: questions.map(q => q.id)
+        }
       }));
+
+    } catch (error) {
+      console.error('Error sending to LLaMA:', error);
+    }
+  };
+
+  const advanceToNextQuestion = async () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      // Send to LLaMA before proceeding to next stage
+      await sendToLlama(transcriptionHistory);
       router.push('/fluxo-inicial/segunda-etapa');
     }
   };
@@ -121,25 +157,29 @@ export default function FirstStage() {
       }
 
       const data = await response.json();
-      
-      // Store the transcribed text in answers and transcription history
       const currentQuestion = questions[currentQuestionIndex];
+      
+      // Create a more detailed entry for the transcription history
+      const newEntry = {
+        questionId: currentQuestion.id,
+        question: currentQuestion.question,
+        transcription: data.text,
+        timestamp: new Date().toISOString(),
+        metadata: {
+          inputType: 'audio',
+          questionNumber: currentQuestionIndex + 1,
+          hasSubtitle: Boolean(currentQuestion.subtitle),
+          subtitle: currentQuestion.subtitle
+        }
+      };
+
       setAnswers(prev => ({
         ...prev,
         [currentQuestion.id]: data.text
       }));
 
-      setTranscriptionHistory(prev => [
-        ...prev,
-        {
-          questionId: currentQuestion.id,
-          question: currentQuestion.question,
-          transcription: data.text,
-          timestamp: new Date().toISOString()
-        }
-      ]);
+      setTranscriptionHistory(prev => [...prev, newEntry]);
 
-      // Automatically advance to next question after successful transcription
       setTimeout(() => {
         advanceToNextQuestion();
         setIsLoading(false);
@@ -159,22 +199,29 @@ export default function FirstStage() {
     setIsLoading(true);
     try {
       const currentQuestion = questions[currentQuestionIndex];
+      
+      // Create a more detailed entry for the transcription history
+      const newEntry = {
+        questionId: currentQuestion.id,
+        question: currentQuestion.question,
+        transcription: textInput,
+        timestamp: new Date().toISOString(),
+        metadata: {
+          inputType: 'text',
+          questionNumber: currentQuestionIndex + 1,
+          hasSubtitle: Boolean(currentQuestion.subtitle),
+          subtitle: currentQuestion.subtitle
+        }
+      };
+
       setAnswers(prev => ({
         ...prev,
         [currentQuestion.id]: textInput
       }));
 
-      setTranscriptionHistory(prev => [
-        ...prev,
-        {
-          questionId: currentQuestion.id,
-          question: currentQuestion.question,
-          transcription: textInput,
-          timestamp: new Date().toISOString()
-        }
-      ]);
+      setTranscriptionHistory(prev => [...prev, newEntry]);
 
-      advanceToNextQuestion();
+      await advanceToNextQuestion();
       setTextInput('');
     } catch (error) {
       console.error('Error processing text:', error);
@@ -225,7 +272,7 @@ export default function FirstStage() {
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
-                  placeholder={questions[currentQuestionIndex].placeholder}
+                  placeholder={currentQuestion.placeholder}
                   className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   disabled={isLoading || isRecording}
                 />
