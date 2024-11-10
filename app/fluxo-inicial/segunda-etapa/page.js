@@ -7,7 +7,7 @@ import { Send} from 'lucide-react'
 export default function page2() {
   const router = useRouter();
   const [textInput, setTextInput] = useState('');
-  const categoryVector = [50,40,40]
+  const categoryVector = [50,20,30]
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -24,9 +24,9 @@ export default function page2() {
           <div>
             <h2 className="text-2xl font-bold text-black mb-8">Você está gastando em: </h2>
             <ul>
-              <li className='text-black mb-8'>💰 Gastos Fixos: <span className='font-bold text-black mb-8'>{categoryVector[0]}%</span> a menos que a média</li>
-              <li className='text-black mb-8'>⚽ Lazer: <span className='font-bold text-black mb-8'>{categoryVector[1]}%</span> a menos que a média</li>  
-              <li className='text-black mb-8'>💳 Dívida: <span className='font-bold text-black mb-8'>{categoryVector[1]}%</span> a menos que a média</li>              
+              <li className='text-black mb-8'>💰 Gastos Fixos: <span className='font-bold text-black mb-8'>{categoryVector[0]}%</span> </li>
+              <li className='text-black mb-8'>⚽ Lazer: <span className='font-bold text-black mb-8'>{categoryVector[1]}%</span> </li>  
+              <li className='text-black mb-8'>💳 Dívida: <span className='font-bold text-black mb-8'>{categoryVector[1]}%</span></li>              
             </ul>
           </div>
           
