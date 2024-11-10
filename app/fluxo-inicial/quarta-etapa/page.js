@@ -111,16 +111,16 @@ export default function page1() {
         </h1>
         <div className="space-y-6">
           <div>
-            <p className="text-lg font-medium text-black">Exemplos mais escolhidos:</p>
+            <p className="text-lg font-medium text-black"> Exemplos mais escolhidos:</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Dinheiro para uma casa</p>
+            <p className="text-lg font-medium text-black">🏠 Casa</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Casamento</p>
+            <p className="text-lg font-medium text-black">💒 Casamento</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Viagem</p>
+            <p className="text-lg font-medium text-black">🛬 Viagem</p>
           </div>
           
           <form onSubmit={handleSubmit} className="mt-8">
