@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -14,8 +13,7 @@ export default function FirstStage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [transcriptionResult, setTranscriptionResult] = useState('');
-  const [showTranscriptionPreview, setShowTranscriptionPreview] = useState(false);
+  const [transcriptionHistory, setTranscriptionHistory] = useState([]);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
 
@@ -60,12 +58,11 @@ export default function FirstStage() {
   const advanceToNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
-      setShowTranscriptionPreview(false);
-      setTranscriptionResult('');
     } else {
       localStorage.setItem('llamaParseStage1', JSON.stringify({
         timestamp: new Date().toISOString(),
-        response: answers
+        response: answers,
+        transcriptionHistory
       }));
       router.push('/fluxo-inicial/segunda-etapa');
     }
@@ -93,8 +90,6 @@ export default function FirstStage() {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
-      setShowTranscriptionPreview(false);
-      setTranscriptionResult('');
     } catch (error) {
       console.error('Error accessing microphone:', error);
       alert('Error accessing microphone. Please make sure you have granted microphone permissions.');
@@ -111,8 +106,6 @@ export default function FirstStage() {
 
   const handleAudioSubmission = async (blob) => {
     setIsLoading(true);
-    setTranscriptionResult('Transcribing...');
-    setShowTranscriptionPreview(true);
     
     try {
       const formData = new FormData();
@@ -128,20 +121,33 @@ export default function FirstStage() {
       }
 
       const data = await response.json();
-      setTranscriptionResult(data.text);
       
-      // Store the transcribed text in answers
+      // Store the transcribed text in answers and transcription history
       const currentQuestion = questions[currentQuestionIndex];
       setAnswers(prev => ({
         ...prev,
         [currentQuestion.id]: data.text
       }));
 
+      setTranscriptionHistory(prev => [
+        ...prev,
+        {
+          questionId: currentQuestion.id,
+          question: currentQuestion.question,
+          transcription: data.text,
+          timestamp: new Date().toISOString()
+        }
+      ]);
+
+      // Automatically advance to next question after successful transcription
+      setTimeout(() => {
+        advanceToNextQuestion();
+        setIsLoading(false);
+      }, 1000);
+
     } catch (error) {
       console.error('Error processing audio:', error);
-      setTranscriptionResult('Error: Failed to transcribe audio');
       alert('Erro ao processar o áudio. Por favor, tente novamente.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -158,6 +164,16 @@ export default function FirstStage() {
         [currentQuestion.id]: textInput
       }));
 
+      setTranscriptionHistory(prev => [
+        ...prev,
+        {
+          questionId: currentQuestion.id,
+          question: currentQuestion.question,
+          transcription: textInput,
+          timestamp: new Date().toISOString()
+        }
+      ]);
+
       advanceToNextQuestion();
       setTextInput('');
     } catch (error) {
@@ -166,10 +182,6 @@ export default function FirstStage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleConfirmTranscription = () => {
-    advanceToNextQuestion();
   };
 
   useEffect(() => {
@@ -195,30 +207,6 @@ export default function FirstStage() {
               <p className="text-sm text-gray-600 mt-1">{currentQuestion.subtitle}</p>
             )}
           </div>
-
-          {/* Transcription Preview */}
-          {showTranscriptionPreview && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm font-medium text-gray-700 mb-2">Transcription:</p>
-              <p className="text-sm text-gray-600">{transcriptionResult}</p>
-              {transcriptionResult && transcriptionResult !== 'Transcribing...' && !transcriptionResult.includes('Error') && (
-                <div className="mt-4 space-x-4">
-                  <button
-                    onClick={handleConfirmTranscription}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    Confirm & Continue
-                  </button>
-                  <button
-                    onClick={startRecording}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                  >
-                    Record Again
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
           
           <form onSubmit={handleTextSubmit} className="mt-8">
             <div className="space-y-4">
@@ -262,8 +250,10 @@ export default function FirstStage() {
                 </button>
               )}
 
-              {isLoading && (
-                <div className="text-sm text-gray-600">Processando...</div>
+              {(isLoading || isRecording) && (
+                <div className="text-sm text-gray-600">
+                  {isRecording ? 'Gravando...' : 'Transcrevendo...'}
+                </div>
               )}
             </div>
           </form>
