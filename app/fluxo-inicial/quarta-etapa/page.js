@@ -61,24 +61,24 @@ export default function page1() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="bg-white rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.2)] max-w-md w-full space-y-8 text-center p-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]">
         <h1 className="text-2xl font-bold text-black mb-8">
-          Me manda um audio me respondendo essas perguntas:
+        O que você acha de criarmos uma meta com base nos seus objetivos?
         </h1>
         <div className="space-y-6">
           <div>
-            <p className="text-lg font-medium text-black">Qual é sua renda media atual?</p>
+            <p className="text-lg font-medium text-black"></p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Atualmente voce tem dividas?</p>
-            <p className="text-sm text-gray-600 mt-1">(se sim, quanto)</p>
+            <p className="text-lg font-medium text-black">Exemplos mais escolhidos:</p>
+            
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Me fale de onde você é.</p>
+            <p className="text-lg font-medium text-black">Dinheiro para uma casa</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Voce ja apostou ou tem costume de apostar?</p>
+            <p className="text-lg font-medium text-black">Casamento</p>
           </div>
           <div>
-            <p className="text-lg font-medium text-black">Vc tem filhos?</p>
+            <p className="text-lg font-medium text-black">Viagem</p>
           </div>
           
           <form onSubmit={handleSubmit} className="mt-8">
