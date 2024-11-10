@@ -184,6 +184,16 @@ export default function FirstStage() {
     }
   };
 
+  const ProgressBar = ({ questions, color }) => (
+    <div className="relative h-3 w-full rounded-full bg-slate-100 overflow-hidden">
+      <div 
+        className={`absolute h-full rounded-full bg-gradient-to-r ${color} transition-all duration-1000 ease-out`}
+        style={{ width: `${questions.length}%` }}
+      />
+    </div>
+  );
+  
+
   useEffect(() => {
     return () => {
       if (audioURL) {
@@ -251,7 +261,7 @@ export default function FirstStage() {
               )}
 
               {(isLoading || isRecording) && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-red-600">
                   {isRecording ? 'Gravando...' : 'Transcrevendo...'}
                 </div>
               )}
@@ -260,6 +270,14 @@ export default function FirstStage() {
           
           <div className="text-sm text-gray-500">
             Questão {currentQuestionIndex + 1} de {questions.length}
+          <div className="mb-4">
+            <div className="h-2 bg-gray-200 rounded-full">
+              <div 
+                className="h-full bg-purple-500 rounded-full transition-all duration-300 ease-in-out mt-5"
+                style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+              ></div>
+            </div>
+          </div>
           </div>
         </div>
       </div>
