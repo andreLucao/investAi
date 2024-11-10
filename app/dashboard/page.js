@@ -62,7 +62,7 @@ export default function Dashboard() {
   }, []);
 
   const handleChatbotClick = () => {
-    router.push('/chatbot-marcos');
+    router.push('/ai-assistant');
   };
 
   return (
