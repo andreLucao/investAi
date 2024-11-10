@@ -25,7 +25,7 @@ export default function LoadingPage() {
       <h1 className="text-xl md:text-2xl text-center font-medium">
         A<span className={`${outfit.className} text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-900 to-purple-400 text-transparent bg-clip-text mr-4 ml-4`}>
             Investe a.í
-          </span>esta pronta para você :)
+          </span>esta pronta para você! 🫵😁
       </h1>
     </div>
   ) 

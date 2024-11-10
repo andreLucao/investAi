@@ -23,30 +23,40 @@ export default function FirstStage() {
     {
       id: 'income',
       question: 'Qual é sua renda média atual?',
-      subtitle: null
+      subtitle: null,
+      placeholder: 'Ex: Minha renda mensal é R$ 3.000'
     },
     {
       id: 'debts',
       question: 'Atualmente você tem dívidas?',
-      subtitle: '(se sim, quanto)'
+      subtitle: '(se sim, quanto)',
+      placeholder: 'Ex: Sim, tenho R$ 5.000 em dívidas no cartão'
     },
     {
       id: 'location',
       question: 'Me fale de onde você é.',
-      subtitle: '(Isto nos ajudara a calcular mais precisamente os seus custos)'
+      subtitle: '(Isto nos ajudara a calcular mais precisamente os seus custos)',
+      placeholder: 'Ex: Moro em São Paulo, SP'
     },
     {
       id: 'gambling',
       question: 'Você já apostou ou tem costume de apostar?',
-      subtitle: '(se sim, por que você aposta?)'
+      subtitle: '(se sim, por que você aposta?)',
+      placeholder: 'Ex: Não, nunca apostei'
     },
     {
       id: 'children',
       question: 'Você tem filhos?',
-      subtitle: null
+      subtitle: null,
+      placeholder:'Ex: Sim, tenho 2 filhos'
     }
   ];
 
+  const getCurrentPlaceholder = () => {
+    const currentQuestion = questions[currentQuestionIndex];
+    return placeholders[currentQuestion.id];
+  };
+  
   const advanceToNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
@@ -217,7 +227,7 @@ export default function FirstStage() {
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
-                  placeholder="Digite sua resposta aqui..."
+                  placeholder={questions[currentQuestionIndex].placeholder}
                   className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   disabled={isLoading || isRecording}
                 />

@@ -12,14 +12,14 @@ const outfit = Outfit({ subsets: ['latin'] })
 // Move data to a separate constant object for better organization
 const DASHBOARD_DATA = {
   goals: [
-    { name: 'Viagem', progress: 75, color: 'from-blue-500 to-blue-600' },
-    { name: 'Carro', progress: 60, color: 'from-purple-500 to-purple-600' },
-    { name: 'Casa', progress: 45, color: 'from-pink-500 to-pink-600' },
+    { name: 'Viagem', progress: 75, color: 'from-blue-500 to-blue-600',goal:'20.000',now:'15.000',emoji: '🛬'},
+    { name: 'Carro', progress: 60, color: 'from-purple-500 to-purple-600',goal:'50.000',now:'30.000',emoji:'🚗'},
+    { name: 'Casa', progress: 45, color: 'from-pink-500 to-pink-600', goal:'100.000',now:'45.000',emoji:'🏠'},
   ],
   finances: [
-    { name: 'Despesas', value: 1050, emoji: '💰' },
-    { name: 'Dívidas', value: 300, emoji: '💳' },
-    { name: 'Investimento', value: 150, emoji: '📈' },
+    { name: 'Despesas', value: 1050, emoji: '💰',p:70 },
+    { name: 'Dívidas', value: 300, emoji: '💳',p:20 },
+    { name: 'Investimento', value: 150, emoji: '📈',p:10 },
   ],
   colors: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e']
 };
@@ -96,7 +96,8 @@ const PieChart = ({ data, hoveredSlice, setHoveredSlice }) => {
       {hoveredSlice !== null && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-lg shadow-lg flex items-center gap-2">
           <span className="text-xl">{data[hoveredSlice].emoji}</span>
-          <span className="font-medium">{data[hoveredSlice].name}</span>
+          <span className="font-medium">{(data[hoveredSlice].name)}</span>
+          <span>{data[hoveredSlice].p}%</span>
         </div>
       )}
     </div>
@@ -137,7 +138,7 @@ export default function Dashboard() {
                 <div key={item.name} className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600 font-medium">{item.name}</span>
-                    <span className="text-slate-700 font-semibold">{progress[index]}%</span>
+                    <span className="text-slate-700 font-semibold">{item.emoji} R$ {item.now}/ R$ {item.goal} ({progress[index]}%)</span>
                   </div>
                   <ProgressBar progress={progress[index]} color={item.color} />
                 </div>
@@ -168,7 +169,7 @@ export default function Dashboard() {
                       style={{ backgroundColor: DASHBOARD_DATA.colors[index]}}
                     />
                     <span className="text-sm font-medium text-slate-700">
-                      {item.emoji} {item.name}
+                      {item.emoji} {item.name} ({((item.value / total) * 100).toFixed(1)}%)
                     </span>
                   </div>
                 ))}
