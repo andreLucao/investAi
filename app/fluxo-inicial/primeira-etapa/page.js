@@ -11,6 +11,7 @@ export default function FirstStage() {
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioURL, setAudioURL] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [transcriptionHistory, setTranscriptionHistory] = useState([]);
@@ -80,20 +81,9 @@ export default function FirstStage() {
       }
 
       const llamaResponse = await response.json();
-      
-      // Set the LLaMA analysis in state
       setLlamaAnalysis(llamaResponse);
-      
-      // Log the complete response
       console.log('Complete LLaMA Response:', llamaResponse);
       
-      // Log specific parts of the analysis
-      console.log('Risk Assessment:', llamaResponse.riskAssessment);
-      console.log('Financial Concerns:', llamaResponse.financialConcerns);
-      console.log('Recommendations:', llamaResponse.recommendations);
-      console.log('Red Flags:', llamaResponse.redFlags);
-
-      // Store in localStorage
       localStorage.setItem('llamaParseStage1', JSON.stringify({
         timestamp: new Date().toISOString(),
         response: answers,
@@ -115,6 +105,8 @@ export default function FirstStage() {
   const advanceToNextQuestion = async () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
+      setIsLoading(false);
+      setIsTranscribing(false);
     } else {
       await sendToLlama(transcriptionHistory);
       router.push('/fluxo-inicial/segunda-etapa');
@@ -158,7 +150,7 @@ export default function FirstStage() {
   };
 
   const handleAudioSubmission = async (blob) => {
-    setIsLoading(true);
+    setIsTranscribing(true);
     
     try {
       const formData = new FormData();
@@ -198,13 +190,13 @@ export default function FirstStage() {
 
       setTimeout(() => {
         advanceToNextQuestion();
-        setIsLoading(false);
       }, 1000);
 
     } catch (error) {
       console.error('Error processing audio:', error);
       alert('Erro ao processar o áudio. Por favor, tente novamente.');
-      setIsLoading(false);
+    } finally {
+      setIsTranscribing(false);
     }
   };
 
@@ -235,26 +227,14 @@ export default function FirstStage() {
       }));
 
       setTranscriptionHistory(prev => [...prev, newEntry]);
-
-      await advanceToNextQuestion();
       setTextInput('');
+      await advanceToNextQuestion();
     } catch (error) {
       console.error('Error processing text:', error);
       alert('Erro ao processar o texto. Por favor, tente novamente.');
-    } finally {
       setIsLoading(false);
     }
   };
-
-  const ProgressBar = ({ questions, color }) => (
-    <div className="relative h-3 w-full rounded-full bg-slate-100 overflow-hidden">
-      <div 
-        className={`absolute h-full rounded-full bg-gradient-to-r ${color} transition-all duration-1000 ease-out`}
-        style={{ width: `${questions.length}%` }}
-      />
-    </div>
-  );
-  
 
   useEffect(() => {
     return () => {
@@ -322,13 +302,18 @@ export default function FirstStage() {
                 </button>
               )}
 
-              {(isLoading || isRecording) && (
+              {isRecording && (
                 <div className="text-sm text-red-600">
-                  {isRecording ? 'Gravando...' : 'Transcrevendo...'}
+                  Gravando...
+                </div>
+              )}
+              
+              {isTranscribing && (
+                <div className="text-sm text-red-600">
+                  Transcrevendo...
                 </div>
               )}
 
-              {/* Add LLaMA analysis status indicator */}
               {llamaAnalysis && (
                 <div className="text-sm text-gray-600">
                   Analysis complete! Check console for details.
@@ -339,14 +324,14 @@ export default function FirstStage() {
           
           <div className="text-sm text-gray-500">
             Questão {currentQuestionIndex + 1} de {questions.length}
-          <div className="mb-4">
-            <div className="h-2 bg-gray-200 rounded-full">
-              <div 
-                className="h-full bg-purple-500 rounded-full transition-all duration-300 ease-in-out mt-5"
-                style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-              ></div>
+            <div className="mb-4">
+              <div className="h-2 bg-gray-200 rounded-full">
+                <div 
+                  className="h-full bg-purple-500 rounded-full transition-all duration-300 ease-in-out mt-5"
+                  style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                ></div>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </div>
