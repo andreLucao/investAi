@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Bot } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const progressData = [
   { name: 'Development', progress: 75, color: 'from-blue-500 to-blue-600' },
@@ -44,6 +45,7 @@ const calculatePieSlices = (data) => {
 };
 
 export default function Dashboard() {
+  const router = useRouter();
   const [progress, setProgress] = useState(progressData.map(() => 0));
   const [hoveredSlice, setHoveredSlice] = useState(null);
   const [showBreakdown, setShowBreakdown] = useState(false);
@@ -58,6 +60,10 @@ export default function Dashboard() {
     }, 500);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleChatbotClick = () => {
+    router.push('/chatbot-marcos');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
@@ -176,6 +182,7 @@ export default function Dashboard() {
       
       <div className="fixed bottom-8 right-8">
         <Button 
+          onClick={handleChatbotClick}
           className="flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <Bot className="h-5 w-5" />
