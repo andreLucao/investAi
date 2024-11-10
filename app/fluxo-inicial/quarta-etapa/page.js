@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mic, Square } from 'lucide-react';
+import { Mic, Square, Send } from 'lucide-react';
 
 export default function page1() {
   const router = useRouter();
@@ -113,11 +113,12 @@ export default function page1() {
 
             {textInput.trim() && (
               <button
-                type="submit"
-                className="w-full mt-4 bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 transition-colors"
-              >
-                Enviar
-              </button>
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 bg-purple-900 text-white rounded-md py-2 px-4 hover:bg-purple-500 transition-colors mt-4"
+            >
+              <Send className="w-4 h-4" />
+              Enviar
+            </button>
             )}
           </form>
         </div>

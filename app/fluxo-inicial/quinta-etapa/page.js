@@ -2,7 +2,9 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { Outfit } from 'next/font/google'
 
+const outfit = Outfit({ subsets: ['latin'] })
 export default function LoadingPage() {
   const router = useRouter()
   //shogo
@@ -21,7 +23,9 @@ export default function LoadingPage() {
         <div className="absolute w-full h-full border-4 border-primary rounded-full border-t-transparent" />
       </div>
       <h1 className="text-xl md:text-2xl text-center font-medium">
-        A <span className="text-primary font-semibold">{'nome da nossa plataforma'}</span> esta pronta para você :)
+        A<span className={`${outfit.className} text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-teal-500 text-transparent bg-clip-text mr-4 ml-4`}>
+            Investe a.í
+          </span>esta pronta para você :)
       </h1>
     </div>
   ) 

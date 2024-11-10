@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Send } from 'lucide-react'
 
 export default function page3() {
   const router = useRouter();
@@ -35,11 +36,12 @@ export default function page3() {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <button
+          <button
               type="submit"
-              className="w-full bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-purple-900 text-white rounded-md py-2 px-4 hover:bg-purple-500 transition-colors "
             >
-              Enviar
+              <Send className="w-4 h-4" />
+              Próximo
             </button>
           </form>
         </div>

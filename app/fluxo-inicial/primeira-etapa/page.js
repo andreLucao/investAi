@@ -115,13 +115,13 @@ export default function page1() {
               </div>
 
               {textInput.trim() && (
-                <button
-                  type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white rounded-full py-3 px-4 hover:bg-blue-700 transition-colors"
-                >
-                  <Send className="w-4 h-4" />
-                  Enviar
-                </button>
+               <button
+               type="submit"
+               className="w-full flex items-center justify-center gap-2 bg-purple-900 text-white rounded-md py-2 px-4 hover:bg-purple-500 transition-colors"
+             >
+               <Send className="w-4 h-4" />
+               Próximo
+             </button>
               )}
             </div>
           </form>

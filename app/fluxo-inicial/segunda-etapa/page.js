@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Send} from 'lucide-react'
 
 export default function page2() {
   const router = useRouter();
@@ -23,18 +24,19 @@ export default function page2() {
           <div>
             <h2 className="text-2xl font-bold text-black mb-8">Você está gastando em: </h2>
             <ul>
-               <li className='text-black mb-8'>Gastos Fixos: <span className='font-bold text-black mb-8'>{categoryVector[1]}% a menos</span> que a média</li>
-              <li className='text-blue-700 font-bold mb-8'>Lazer: <span className='font-bold text-black mb-8'>{categoryVector[0]}% a mais</span> <span className='text-black mb-8'>que a média</span></li>  
-              <li className='text-red-700 font-bold mb-8'>Dívida: <span className='font-bold text-black mb-8'>{categoryVector[2]}% a mais</span> <span className='text-black mb-8'>que a média</span></li>             
+              <li className='text-black mb-8'>💰 Gastos Fixos: <span className='font-bold text-black mb-8'>{categoryVector[0]}%</span> a menos que a média</li>
+              <li className='text-black mb-8'>⚽ Lazer: <span className='font-bold text-black mb-8'>{categoryVector[1]}%</span> a menos que a média</li>  
+              <li className='text-black mb-8'>💳 Dívida: <span className='font-bold text-black mb-8'>{categoryVector[1]}%</span> a menos que a média</li>              
             </ul>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <button
               type="submit"
-              className="w-full bg-purple-900 text-white rounded-md py-2 px-4 hover:bg-purple-500 transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-purple-900 text-white rounded-md py-2 px-4 hover:bg-purple-500 transition-colors"
             >
-              Enviar
+              <Send className="w-4 h-4" />
+              Próximo
             </button>
           </form>
         </div>
