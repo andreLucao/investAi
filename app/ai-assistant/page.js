@@ -24,22 +24,24 @@ export default function ChatPage() {
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
-
     setError("");
     
     const userMessage = {
       role: "user",
       content: input,
     };
-
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
     setStreamingContent("");
-
     let fullResponse = '';
-
+    
     try {
+      console.log('Sending message:', {
+        messageCount: messages.length + 1,
+        lastMessage: input,
+      });
+      
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -49,43 +51,54 @@ export default function ChatPage() {
           messages: [...messages, userMessage],
         }),
       });
-
+      
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        console.error('Error data:', errorData);
+        throw new Error(errorData.message || errorData.error || `HTTP error! status: ${response.status}`);
       }
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
+      const contentType = response.headers.get('Content-Type');
+      console.log('Response content type:', contentType);
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      if (contentType?.includes('application/json')) {
+        const data = await response.json();
+        console.log('JSON response:', data);
+        fullResponse = data.content || JSON.stringify(data);
+      } else {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
 
-        const chunk = decoder.decode(value);
-        
-        // Log raw chunk for debugging
-        console.log('Raw chunk:', chunk);
-
-        const lines = chunk.split('\n').filter(line => line.trim() !== '');
-        
-        for (const line of lines) {
-          if (line.includes('[DONE]')) continue;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value);
+          console.log('Received chunk:', chunk);
           
-          const data = line.replace(/^data: /, '').trim();
+          const lines = chunk.split('\n').filter(line => line.trim() !== '');
           
-          try {
-            // Try to parse as JSON first
-            const jsonData = JSON.parse(data);
-            const content = jsonData.choices?.[0]?.delta?.content || jsonData.content || '';
-            if (content) {
-              fullResponse += content;
-              setStreamingContent(fullResponse);
-            }
-          } catch (e) {
-            // If JSON parsing fails, use the raw data
-            if (data && !data.includes('[DONE]')) {
-              fullResponse += data;
-              setStreamingContent(fullResponse);
+          for (const line of lines) {
+            if (line.includes('[DONE]')) continue;
+            
+            const data = line.replace(/^data: /, '').trim();
+            
+            try {
+              if (data) {
+                const jsonData = JSON.parse(data);
+                const content = jsonData.choices?.[0]?.delta?.content || jsonData.content || '';
+                if (content) {
+                  fullResponse += content;
+                  setStreamingContent(fullResponse);
+                }
+              }
+            } catch (e) {
+              console.warn('Failed to parse chunk as JSON:', e);
+              if (data && !data.includes('[DONE]')) {
+                fullResponse += data;
+                setStreamingContent(fullResponse);
+              }
             }
           }
         }
