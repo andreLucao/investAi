@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Send } from 'lucide-react';
-
+ 
 export default function FinancialAssistant() {
   const [message, setMessage] = useState(''); 
   const [chatHistory, setChatHistory] = useState([]); 
