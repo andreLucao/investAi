@@ -1,0 +1,14 @@
+{
+    "env": {
+      "GROQ_API_KEY": "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",
+      "NEXT_PUBLIC_CODEGPT_API_KEY": "sk-6c3a1906-2f12-44ac-89ec-5c1cda832c11",
+      "NEXT_PUBLIC_CODEGPT_AGENT_ID": "e4645c9b-2b6a-4d7e-ba74-02560eb51d2c"
+    },
+    "build": {
+      "env": {
+        "GROQ_API_KEY": "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",
+        "NEXT_PUBLIC_CODEGPT_API_KEY": "sk-6c3a1906-2f12-44ac-89ec-5c1cda832c11",
+        "NEXT_PUBLIC_CODEGPT_AGENT_ID": "e4645c9b-2b6a-4d7e-ba74-02560eb51d2c"
+      }
+    }
+  }
