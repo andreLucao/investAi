@@ -266,6 +266,7 @@ export default function FirstStage() {
                     isLoading || isRecording
                       ? 'bg-purple-400 cursor-not-allowed'
                       : 'bg-purple-600 hover:bg-purple-700'
+
                   } text-white`}
                 >
                   <Send className="w-4 h-4" />
