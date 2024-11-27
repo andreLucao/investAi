@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Bot } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Outfit } from 'next/font/google'
+import EmergencyFundCard from '@/components/ui/EmergencyFundCard';
 
 const outfit = Outfit({ subsets: ['latin'] })
 
@@ -192,7 +193,7 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          
+          <EmergencyFundCard/>
           <Card>
             <CardHeader>
               <CardTitle>Detalhe da Divisão</CardTitle>
