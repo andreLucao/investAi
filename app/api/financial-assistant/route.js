@@ -35,7 +35,7 @@ export async function POST(request) {
           content: message
         }
       ],
-      model: "llama-3.2-90b-text-preview",
+      model: "llama3-8b-8192",
       temperature: 0.7,
       max_tokens: 2048,
     });

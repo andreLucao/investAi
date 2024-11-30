@@ -1,8 +1,10 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Send, Mic, Square } from 'lucide-react';
+import { Send, Mic, Square, ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function FinancialAssistant() {
+  const router = useRouter();
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -115,7 +117,6 @@ export default function FinancialAssistant() {
           content: userMessage
         };
 
-        // Get response from financial assistant API
         const assistantResponse = await handleFinancialAssistantAPI(userMessage);
         
         const assistantMessage = {
@@ -179,7 +180,16 @@ export default function FinancialAssistant() {
 
   return (
     <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-purple-700">Assistente Investe Aí</h1>
+      <div className="flex items-center gap-4 mb-4">
+        <button
+          onClick={() => router.push('/dashboard')}
+          className="p-2 hover:bg-purple-50 rounded-full transition-colors group"
+          aria-label="Voltar para o dashboard"
+        >
+          <ArrowLeft className="w-6 h-6 text-purple-600 group-hover:text-purple-700" />
+        </button>
+        <h1 className="text-2xl font-bold text-purple-700">Assistente Investe Aí</h1>
+      </div>
       
       <div className="flex flex-wrap gap-3 mb-6">
         {suggestions.map((suggestion, index) => (
