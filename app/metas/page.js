@@ -22,7 +22,7 @@ const DEFAULT_COLORS = [
 const EMOJIS = ['🎯', '🎓','🏠', '🎮', '💻',  '🚗', '🛩️', '📚', '💍', '🏖️'];
 
 const StatsCard = ({ title, value, icon: Icon, color }) => (
-  <Card className="dark:bg-slate-800">
+  <Card className="dark:bg-slate-800 dark:text-white">
     <CardContent className="p-6">
       <div className="flex items-center justify-between">
         <div>
@@ -51,7 +51,7 @@ const CommitmentChart = ({ goals }) => {
   return (
     <Card className="dark:bg-slate-800 mt-8">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">Comprometimento Mensal</CardTitle>
+        <CardTitle className="text-xl font-semibold dark:text-white ">Comprometimento Mensal</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-80 w-full">
@@ -193,19 +193,19 @@ export default function Goals() {
               title="Progresso Médio"
               value={`${calculateTotalProgress()}%`}
               icon={TrendingUp}
-              color="bg-gradient-to-r from-blue-500 to-blue-600"
+              color="bg-gradient-to-r from-blue-500 to-blue-600 dark:text-white"
             />
             <StatsCard
               title="Total Economizado"
               value={`R$ ${calculateTotalSaved().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
               icon={CircleDollarSign}
-              color="bg-gradient-to-r from-green-500 to-green-600"
+              color="bg-gradient-to-r from-green-500 to-green-600 dark:text-white"
             />
             <StatsCard
-              title="Meta Total"
-              value={`R$ ${calculateTotalTarget().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-              icon={Target}
-              color="bg-gradient-to-r from-purple-500 to-purple-600"
+            title="Meta Total"
+            value={`R$ ${calculateTotalTarget().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+            icon={Target}
+            color="bg-gradient-to-r from-purple-500 to-purple-600 dark:text-white"
             />
           </div>
 
