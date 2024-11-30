@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Inter } from 'next/font/google'
 import { Outfit } from 'next/font/google'
-import { Mic, Brain, UniversalAccess, TrendingUp, ChevronRight, Star, VolumeUp, Eye, FileText, X } from 'lucide-react'
+import { Mic, Brain, UniversalAccess, TrendingUp, ChevronRight, Star, VolumeUp, Eye, FileText, X, Check } from 'lucide-react'
 import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -11,6 +11,52 @@ const outfit = Outfit({ subsets: ['latin'] })
 
 export default function LandingPage() {
   const [showModal, setShowModal] = useState(false)
+
+  const pricingPlans = [
+    {
+      name: 'Gratuito',
+      price: '0',
+      description: 'Perfeito para começar sua jornada financeira',
+      features: [
+        'Análise básica de perfil',
+        'Recomendações gerais',
+        'Acesso a conteúdo educacional',
+        'Suporte por email'
+      ],
+      buttonText: 'Começar Grátis',
+      highlighted: false
+    },
+    {
+      name: 'Premium',
+      price: '29,90',
+      description: 'Para quem quer acelerar seus investimentos',
+      features: [
+        'Análise avançada de perfil',
+        'Recomendações personalizadas',
+        'Acesso a todos os conteúdos',
+        'Suporte prioritário 24/7',
+        'Consultas com especialistas',
+        'Ferramentas avançadas de planejamento'
+      ],
+      buttonText: 'Assinar Premium',
+      highlighted: true
+    },
+    {
+      name: 'Empresarial',
+      price: '99,90',
+      description: 'Ideal para gestão financeira corporativa',
+      features: [
+        'Tudo do Premium',
+        'Múltiplos usuários',
+        'Dashboard personalizado',
+        'Relatórios avançados',
+        'API de integração',
+        'Gerente de conta dedicado'
+      ],
+      buttonText: 'Falar com Vendas',
+      highlighted: false
+    }
+  ]
 
   return (
     <div className={`min-h-screen bg-gradient-to-b from-white to-gray-100 ${inter.className}`}>
@@ -66,17 +112,14 @@ export default function LandingPage() {
         {/* Modal */}
         {showModal && (
           <>
-            {/* Backdrop */}
             <div 
               className="fixed inset-0 bg-black bg-opacity-50 z-40"
               onClick={() => setShowModal(false)}
             />
             
-            {/* Modal Content */}
             <div className="fixed inset-0 z-50 overflow-y-auto">
               <div className="flex min-h-full items-center justify-center p-4">
                 <div className="relative bg-white rounded-lg shadow-xl max-w-[600px] w-full mx-4">
-                  {/* Close button */}
                   <button
                     onClick={() => setShowModal(false)}
                     className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
@@ -84,14 +127,12 @@ export default function LandingPage() {
                     <X size={24} />
                   </button>
                   
-                  {/* Modal header */}
                   <div className="p-6 pb-0">
                     <h3 className={`text-2xl font-semibold ${outfit.className}`}>
                       Sobre o Investe a.í
                     </h3>
                   </div>
                   
-                  {/* Modal body */}
                   <div className="p-6 space-y-4">
                     <p className="text-gray-600">
                       O Investe a.í é uma plataforma inovadora que combina inteligência artificial com acessibilidade para ajudar você a tomar melhores decisões financeiras.
@@ -110,7 +151,6 @@ export default function LandingPage() {
                     </p>
                   </div>
                   
-                  {/* Modal footer */}
                   <div className="p-6 pt-0">
                     <button
                       className="w-full sm:w-auto px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-md"
@@ -192,22 +232,109 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Pricing Section */}
+        <section className="container mx-auto px-4 py-16">
+          <h2 className={`${outfit.className} text-3xl font-bold text-center mb-4`}>Planos e Preços</h2>
+          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Escolha o plano ideal para suas necessidades financeiras e comece sua jornada rumo à independência financeira.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {pricingPlans.map((plan, index) => (
+              <div
+                key={index}
+                className={`rounded-lg p-6 transition-all duration-300 ${
+                  plan.highlighted
+                    ? 'bg-gradient-to-b from-purple-50 to-white border-2 border-purple-500 shadow-xl transform hover:-translate-y-1'
+                    : 'bg-white border border-gray-200 shadow-md hover:shadow-lg'
+                }`}
+              >
+                <h3 className={`${outfit.className} text-xl font-bold mb-2`}>{plan.name}</h3>
+                <div className="flex items-baseline mb-4">
+                  <span className="text-3xl font-bold">R$</span>
+                  <span className="text-4xl font-bold mx-1">{plan.price}</span>
+                  {plan.price !== '0' && <span className="text-gray-600">/mês</span>}
+                </div>
+                <p className="text-gray-600 mb-6">{plan.description}</p>
+                <button
+                  className={`w-full py-3 px-4 rounded-md font-semibold mb-6 transition-colors ${
+                    plan.highlighted
+                      ? 'bg-purple-600 text-white hover:bg-purple-700'
+                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  }`}
+                >
+                  {plan.buttonText}
+                </button>
+                <ul className="space-y-3">
+                  {plan.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start">
+                      <Check className="w-5 h-5 text-purple-600 mr-2 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-600">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="container mx-auto px-4 py-16">
           <div className="bg-gradient-to-r from-purple-900 to-purple-400 rounded-lg shadow-xl p-8 md:p-12 text-center">
-            <h2 className={`${outfit.className} text-3xl md:text-4xl font-bold text-white mb-6`}>
-              Pronto para investir melhor?
+          <h2 className={`${outfit.className} text-3xl md:text-4xl font-bold text-white mb-6`}>
+              Pronto para investir no seu futuro?
             </h2>
-            <button className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-lg">
-              Começar Gratuitamente
-            </button>
+            <p className="text-white text-xl mb-8">
+              Comece hoje mesmo sua jornada para a independência financeira
+            </p>
+            <Link href="/fluxo-inicial/primeira-etapa">
+              <button className="px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-lg font-semibold transition-colors">
+                Começar Gratuitamente
+              </button>
+            </Link>
           </div>
         </section>
       </main>
 
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 Investe a.í. Todos os direitos reservados.</p>
+      <footer className="bg-gray-800 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className={`${outfit.className} text-lg font-bold mb-4`}>Investe a.í</h3>
+              <p className="text-gray-400">
+                Transformando o futuro financeiro através da tecnologia e acessibilidade.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Recursos</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white">Blog</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Guias</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Ferramentas</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Newsletter</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Empresa</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white">Sobre</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Carreiras</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Contato</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Parcerias</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white">Privacidade</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Termos</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Segurança</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Cookies</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 Investe a.í. Todos os direitos reservados.</p>
+          </div>
         </div>
       </footer>
     </div>
