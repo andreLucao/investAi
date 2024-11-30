@@ -109,7 +109,7 @@ export default function FirstStage() {
       setIsTranscribing(false);
     } else {
       await sendToLlama(transcriptionHistory);
-      router.push('/fluxo-inicial/terceira-etapa');
+      router.push('/fluxo-inicial/segunda-etapa');
     }
   };
 
