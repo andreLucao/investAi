@@ -9,6 +9,7 @@ import { Outfit } from 'next/font/google'
 import EmergencyFundCard from '@/components/ui/EmergencyFundCard';
 import SideBar from '@/components/ui/SideBar';
 import { Sun, Moon } from 'lucide-react';
+import TrialNotification from '../components/TrialNotification';
 
 const outfit = Outfit({ subsets: ['latin'] })
 
@@ -167,7 +168,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 dark:text-white">
       <SideBar expanded={expanded} setExpanded={setExpanded} />
-      
+      <TrialNotification />
       <div className={`transition-all duration-300 ${expanded ? 'ml-64' : 'ml-20'} p-8`}>
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-4">
