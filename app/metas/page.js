@@ -51,7 +51,7 @@ const CommitmentChart = ({ goals }) => {
   return (
     <Card className="dark:bg-slate-800 mt-8">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold dark:text-white ">Comprometimento Mensal</CardTitle>
+        <CardTitle className="text-xl font-semibold dark:text-white">Comprometimento Mensal</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-80 w-full">
@@ -181,14 +181,20 @@ export default function Goals() {
       <div className={`transition-all duration-300 ${expanded ? 'ml-64' : 'ml-20'} p-8`}>
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h2 className={`${outfit.className} text-4xl md:text-5xl font-bold`}>
+            <h2 className={`${outfit.className} text-4xl md:text-5xl font-bold flex items-center`}>
               <span className="text-gray-500 dark:text-gray-300 mr-4">Minhas Metas</span>
               <Target className="inline-block w-8 h-8 text-purple-500" />
             </h2>
+            <Button
+              onClick={() => setIsAddingGoal(true)}
+              className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Nova Meta
+            </Button>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 dark:text-white">
             <StatsCard
               title="Progresso Médio"
               value={`${calculateTotalProgress()}%`}
@@ -202,23 +208,14 @@ export default function Goals() {
               color="bg-gradient-to-r from-green-500 to-green-600 dark:text-white"
             />
             <StatsCard
-            title="Meta Total"
-            value={`R$ ${calculateTotalTarget().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-            icon={Target}
-            color="bg-gradient-to-r from-purple-500 to-purple-600 dark:text-white"
+              title="Meta Total"
+              value={`R$ ${calculateTotalTarget().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+              icon={Target}
+              color="bg-gradient-to-r from-purple-500 to-purple-600 dark:text-white"
             />
           </div>
 
-          {/* Commitment Chart */}
           <CommitmentChart goals={goals} />
-
-          <Button
-            onClick={() => setIsAddingGoal(true)}
-            className="my-6 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Nova Meta
-          </Button>
 
           {isAddingGoal && (
             <Card className="mb-6 dark:bg-slate-800">
@@ -337,41 +334,42 @@ export default function Goals() {
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => handleDeleteGoal(goal.id)}className="dark:hover:bg-slate-700"
-                            >
-                              <Trash2 className="w-4 h-4 text-red-500" />
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-slate-600 dark:text-slate-300">
-                              R$ {goal.currentAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / 
-                              R$ {goal.targetAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                            </span>
-                            <span className="font-semibold">
-                              {calculateProgress(goal.currentAmount, goal.targetAmount)}%
-                            </span>
-                          </div>
-                          <ProgressBar
-                            progress={calculateProgress(goal.currentAmount, goal.targetAmount)}
-                            color={goal.color}
-                          />
+                            onClick={() => handleDeleteGoal(goal.id)}
+                            className="dark:hover:bg-slate-700"
+                          >
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
                         </div>
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-  
-            <div className="mt-8 flex justify-center">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                © 2024 Investe a.í. Todos os direitos reservados.
-              </p>
-            </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600 dark:text-white">
+                            R$ {goal.currentAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / 
+                            R$ {goal.targetAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </span>
+                          <span className="font-semibold dark:text-white">
+                            {calculateProgress(goal.currentAmount, goal.targetAmount)}%
+                          </span>
+                        </div>
+                        <ProgressBar
+                          progress={calculateProgress(goal.currentAmount, goal.targetAmount)}
+                          color={goal.color}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              © 2024 Investe a.í. Todos os direitos reservados.
+            </p>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
