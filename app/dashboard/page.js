@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Bot, Calculator, Menu, Home, Target, BookOpen, Settings, ChevronRight, ChevronLeft, Mic, Brain, UniversalAccess, TrendingUp, Star, VolumeUp, Eye, FileText, X, Check } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Outfit } from 'next/font/google'
 import EmergencyFundCard from '@/components/ui/EmergencyFundCard';
-import Link from 'next/link';
+import SideBar from '@/components/ui/SideBar';
+import { Sun, Moon } from 'lucide-react';
 
 const outfit = Outfit({ subsets: ['latin'] })
 
@@ -49,7 +50,7 @@ const calculatePieSlices = (data) => {
 };
 
 const ProgressBar = ({ progress, color }) => (
-  <div className="relative h-3 w-full rounded-full bg-slate-100 overflow-hidden">
+  <div className="relative h-3 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
     <div 
       className={`absolute h-full rounded-full bg-gradient-to-r ${color} transition-all duration-1000 ease-out`}
       style={{ width: `${progress}%` }}
@@ -82,10 +83,10 @@ const PieChart = ({ data, hoveredSlice, setHoveredSlice }) => {
         ))}
       </svg>
       {hoveredSlice !== null && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-lg shadow-lg flex items-center gap-2">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-lg flex items-center gap-2">
           <span className="text-xl">{data[hoveredSlice].emoji}</span>
-          <span className="font-medium">{(data[hoveredSlice].name)}</span>
-          <span>{data[hoveredSlice].p}%</span>
+          <span className="font-medium dark:text-white">{(data[hoveredSlice].name)}</span>
+          <span className="dark:text-white">{data[hoveredSlice].p}%</span>
         </div>
       )}
     </div>
@@ -97,81 +98,39 @@ const Modal = ({ isOpen, onClose, children }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg max-w-[425px] w-full mx-4 relative">
+      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-[425px] w-full mx-4 relative p-6">
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold mb-6 dark:text-white">Investir vs Apostar</h2>
+          <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+            <h3 className="font-semibold text-green-700 dark:text-green-300 mb-2">Investir 📈</h3>
+            <ul className="list-disc list-inside text-green-600 dark:text-green-400 space-y-2">
+              <li>Crescimento consistente ao longo do tempo</li>
+              <li>Risco calculado e gerenciável</li>
+              <li>Baseado em análise e estratégia</li>
+              <li>Construção de patrimônio a longo prazo</li>
+            </ul>
+          </div>
+          <div className="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
+            <h3 className="font-semibold text-red-700 dark:text-red-300 mb-2">Apostar 🎲</h3>
+            <ul className="list-disc list-inside text-red-600 dark:text-red-400 space-y-2">
+              <li>Alta volatilidade e risco de perda total</li>
+              <li>Baseado em sorte e chance</li>
+              <li>Sem controle sobre o resultado</li>
+              <li>Possibilidade de comportamento compulsivo</li>
+            </ul>
+          </div>
+        </div>
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
           ✕
         </button>
-        {children}
       </div>
     </div>
   );
 };
 
-const Sidebar = ({ expanded, setExpanded }) => {
-  const [showText, setShowText] = useState(false);
-  const router = useRouter();
-
-  const menuItems = [
-    { icon: Home, label: 'Dashboard', path: '/dashboard' },
-    { icon: Bot, label: 'Assistente IA', path: '/ai-assistant' },
-    { icon: Calculator, label: 'Calculadoras', path: '/calculadoras' },
-    { icon: Target, label: 'Metas', path: '/metas' },
-    { icon: BookOpen, label: 'Educação', path: '/educacao' },
-    { icon: Settings, label: 'Configurações', path: '/config' },
-  ];
-
-  useEffect(() => {
-    let timer;
-    if (expanded) {
-      timer = setTimeout(() => {
-        setShowText(true);
-      }, 70);
-    } else {
-      setShowText(false);
-    }
-    return () => clearTimeout(timer);
-  }, [expanded]);
-
-  return (
-    <div 
-      className={`fixed left-0 top-0 h-screen bg-white shadow-lg transition-all duration-300 ease-in-out z-50 flex flex-col
-      ${expanded ? 'w-64' : 'w-20'}`}
-    >
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="absolute -right-3 top-8 bg-purple-600 text-white rounded-full p-1 hover:bg-purple-700 transition-colors"
-      >
-        {expanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-      </button>
-
-      <div className="flex items-center p-4 mb-6">
-        <h1 
-          className={`${outfit.className} text-xl font-bold text-gray-800
-          ${showText ? 'block' : 'hidden'}`}
-        >
-          Investe a.í
-        </h1>
-      </div>
-
-      <nav className="flex-1">
-        {menuItems.map((item, index) => (
-          <Link
-            key={index}
-            href={item.path}
-            className={`flex items-center px-4 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors
-            ${expanded ? 'space-x-4' : 'justify-center'}`}
-          >
-            <item.icon className={`w-6 h-6 ${expanded ? '' : 'text-purple-600'}`} />
-            {expanded && <span className="font-medium">{item.label}</span>}
-          </Link>
-        ))}
-      </nav>
-    </div>
-  );
-};
 export default function Dashboard() {
   const router = useRouter();
   const [progress, setProgress] = useState(DASHBOARD_DATA.goals.map(() => 0));
@@ -179,6 +138,7 @@ export default function Dashboard() {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   
   const total = DASHBOARD_DATA.finances.reduce((sum, item) => sum + item.value, 0);
 
@@ -187,31 +147,55 @@ export default function Dashboard() {
       setProgress(DASHBOARD_DATA.goals.map(item => item.progress));
       setShowBreakdown(true);
     }, 500);
+
+    if (typeof window !== 'undefined') {
+      const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDark(darkModePreference);
+    }
+
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <Sidebar expanded={expanded} setExpanded={setExpanded} />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 dark:text-white">
+      <SideBar expanded={expanded} setExpanded={setExpanded} />
       
       <div className={`transition-all duration-300 ${expanded ? 'ml-64' : 'ml-20'} p-8`}>
         <div className="max-w-6xl mx-auto">
-          <h2 className={`${outfit.className} text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-teal-500 text-transparent bg-clip-text`}>
-            <span className="text-4xl md:text-5xl font-bold text-gray-500 mr-4">Dashboard</span> 
-            Investe a.í
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className={`${outfit.className} text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 text-transparent bg-clip-text`}>
+              <span className="text-4xl md:text-5xl font-bold text-gray-500 dark:text-gray-300 mr-4">Dashboard</span> 
+              Investe a.í
+            </h2>
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
+              {isDark ? <Sun className="w-6 h-6 text-yellow-500" /> : <Moon className="w-6 h-6 text-slate-700" />}
+            </button>
+          </div>
           
           <div className="grid gap-8 md:grid-cols-2">
-            <Card className="col-span-2">
+            <Card className="col-span-2 dark:bg-slate-800">
               <CardHeader>
-                <CardTitle>Progresso das Metas</CardTitle>
+                <CardTitle className="dark:text-white">Progresso das Metas</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {DASHBOARD_DATA.goals.map((item, index) => (
                   <div key={item.name} className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600 font-medium">{item.name}</span>
-                      <span className="text-slate-700 font-semibold">{item.emoji} R$ {item.now}/ R$ {item.goal} ({progress[index]}%)</span>
+                      <span className="text-slate-600 dark:text-slate-300 font-medium">{item.name}</span>
+                      <span className="text-slate-700 dark:text-slate-200 font-semibold">
+                        {item.emoji} R$ {item.now}/ R$ {item.goal} ({progress[index]}%)
+                      </span>
                     </div>
                     <ProgressBar progress={progress[index]} color={item.color} />
                   </div>
@@ -219,9 +203,9 @@ export default function Dashboard() {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="dark:bg-slate-800">
               <CardHeader>
-                <CardTitle>Divisão das finanças</CardTitle>
+                <CardTitle className="dark:text-white">Divisão das finanças</CardTitle>
               </CardHeader>
               <CardContent>
                 <PieChart 
@@ -241,7 +225,7 @@ export default function Dashboard() {
                         className="h-3 w-3 rounded-full" 
                         style={{ backgroundColor: DASHBOARD_DATA.colors[index]}}
                       />
-                      <span className="text-sm font-medium text-slate-700">
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
                         {item.emoji} {item.name} ({((item.value / total) * 100).toFixed(1)}%)
                       </span>
                     </div>
@@ -250,11 +234,11 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <EmergencyFundCard/>
+            <EmergencyFundCard />
 
-            <Card>
+            <Card className="dark:bg-slate-800">
               <CardHeader>
-                <CardTitle>Detalhe da Divisão</CardTitle>
+                <CardTitle className="dark:text-white">Detalhe da Divisão</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-6">
@@ -271,13 +255,13 @@ export default function Dashboard() {
                             className="h-4 w-4 rounded-full" 
                             style={{ backgroundColor: DASHBOARD_DATA.colors[index] }}
                           />
-                          <span className="text-slate-700">{item.name}</span>
+                          <span className="text-slate-700 dark:text-slate-200">{item.name}</span>
                         </div>
-                        <span className="font-semibold text-slate-900">
+                        <span className="font-semibold text-slate-900 dark:text-white">
                           {item.emoji} R$ {item.value.toLocaleString()} ({((item.value / total) * 100).toFixed(1)}%)
                         </span>
                       </div>
-                      <div className="relative h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                      <div className="relative h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
                         <div 
                           className="absolute h-full rounded-full transition-all duration-1000 ease-out"
                           style={{ 
@@ -296,28 +280,31 @@ export default function Dashboard() {
                     variant="default"
                     size="lg"
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-medium px-8 py-2 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 m-10"
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-medium px-8 py-2 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 m-10"
                   >
                     Veja a diferença entre investir e apostar!
                   </Button>
                 </div>
 
-                <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <Modal 
+                  isOpen={isModalOpen} 
+                  onClose={() => setIsModalOpen(false)} 
+                >
                   <div className="p-6">
-                    <h2 className="text-2xl font-semibold mb-6">Investir vs Apostar</h2>
+                    <h2 className="text-2xl font-semibold mb-6 dark:text-white">Investir vs Apostar</h2>
                     <div className="space-y-4">
-                      <div className="bg-green-50 p-4 rounded-lg">
-                        <h3 className="font-semibold text-green-700 mb-2">Investir 📈</h3>
-                        <ul className="list-disc list-inside text-green-600 space-y-2">
+                      <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                        <h3 className="font-semibold text-green-700 dark:text-green-300 mb-2">Investir 📈</h3>
+                        <ul className="list-disc list-inside text-green-600 dark:text-green-400 space-y-2">
                           <li>Crescimento consistente ao longo do tempo</li>
                           <li>Risco calculado e gerenciável</li>
                           <li>Baseado em análise e estratégia</li>
                           <li>Construção de patrimônio a longo prazo</li>
                         </ul>
                       </div>
-                      <div className="bg-red-50 p-4 rounded-lg">
-                        <h3 className="font-semibold text-red-700 mb-2">Apostar 🎲</h3>
-                        <ul className="list-disc list-inside text-red-600 space-y-2">
+                      <div className="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
+                        <h3 className="font-semibold text-red-700 dark:text-red-300 mb-2">Apostar 🎲</h3>
+                        <ul className="list-disc list-inside text-red-600 dark:text-red-400 space-y-2">
                           <li>Alta volatilidade e risco de perda total</li>
                           <li>Baseado em sorte e chance</li>
                           <li>Sem controle sobre o resultado</li>
@@ -332,7 +319,7 @@ export default function Dashboard() {
           </div>
 
           <div className="mt-8 flex justify-center">
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               © 2024 Investe a.í. Todos os direitos reservados.
             </p>
           </div>

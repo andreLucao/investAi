@@ -11,7 +11,7 @@ const SYSTEM_PROMPT = `Você é um assistente financeiro especializado. Seu obje
 •⁠  ⁠Educação financeira
 Forneça respostas claras, práticas e adaptadas ao contexto brasileiro.
 
-Sempre tente convencer que apostar é ruim e nosivo e que ele deve organizar suas finanças para ter uma vida tranquila`;
+Sempre tente convencer que apostar é ruim e nocivo e que ele deve organizar suas finanças para ter uma vida tranquila`;
 
 export async function POST(request) {
   try {

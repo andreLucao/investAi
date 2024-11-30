@@ -43,8 +43,9 @@ export default function LandingPage() {
     },
     {
       name: 'Empresarial',
-      price: '99,90',
-      description: 'Ideal para gestão financeira corporativa',
+      price: '4,90',
+      description: 'Ideal para que seus funcionarios tenham organização financeira.',
+      priceSubtext: 'por colaborador',
       features: [
         'Tudo do Premium',
         'Múltiplos usuários',
@@ -252,9 +253,14 @@ export default function LandingPage() {
                 <div className="flex items-baseline mb-4">
                   <span className="text-3xl font-bold">R$</span>
                   <span className="text-4xl font-bold mx-1">{plan.price}</span>
-                  {plan.price !== '0' && <span className="text-gray-600">/mês</span>}
+                  {plan.price !== '0' && (
+                    <span className="text-gray-600">
+                      {plan.priceSubtext ? `/${plan.priceSubtext}` : '/mês'}
+                    </span>
+                  )}
                 </div>
                 <p className="text-gray-600 mb-6">{plan.description}</p>
+                <Link href="https://calendly.com/marcos-prismma/30min">
                 <button
                   className={`w-full py-3 px-4 rounded-md font-semibold mb-6 transition-colors ${
                     plan.highlighted
@@ -263,7 +269,7 @@ export default function LandingPage() {
                   }`}
                 >
                   {plan.buttonText}
-                </button>
+                </button></Link>
                 <ul className="space-y-3">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start">
@@ -280,7 +286,7 @@ export default function LandingPage() {
         {/* CTA Section */}
         <section className="container mx-auto px-4 py-16">
           <div className="bg-gradient-to-r from-purple-900 to-purple-400 rounded-lg shadow-xl p-8 md:p-12 text-center">
-          <h2 className={`${outfit.className} text-3xl md:text-4xl font-bold text-white mb-6`}>
+<h2 className={`${outfit.className} text-3xl md:text-4xl font-bold text-white mb-6`}>
               Pronto para investir no seu futuro?
             </h2>
             <p className="text-white text-xl mb-8">
