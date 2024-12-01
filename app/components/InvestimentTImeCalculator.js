@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Card, CardContent } from '../components/card';
+import { Card, CardContent } from '../components/Card';
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
 
 const InvestmentTimeCalculator = () => {
