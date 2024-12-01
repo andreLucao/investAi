@@ -7,7 +7,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   if (isLoggedIn) {
-    redirect('/fluxo-inicial/primeira-etapa');
+    redirect('/home');
   } else {
     redirect('/chat-perguntas');
   }

@@ -1,13 +1,13 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
+import { Button } from '../components/button';
 import { Bot } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Outfit } from 'next/font/google'
-import EmergencyFundCard from '@/components/ui/EmergencyFundCard';
-import SideBar from '@/components/ui/SideBar';
+import EmergencyFundCard from '../components/EmergencyFundCard';
+import SideBar from '../components/SideBar';
 import { Sun, Moon } from 'lucide-react';
 import TrialNotification from '../components/TrialNotification';
 

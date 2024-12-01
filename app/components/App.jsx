@@ -3,7 +3,7 @@ import InvestmentTimeCalculator from './InvestimentTImeCalculator';
 import FutureValCalc from './FutureValCalc';
 import MonthInvCalc from './MonthInCalc';
 import DividaCalc from './DividaCalc';
-import Card from './Card';
+import Card from './card';
 
 const App = () => {
     const [selectedCalculators, setSelectedCalculators] = useState([]);

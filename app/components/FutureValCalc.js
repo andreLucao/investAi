@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
