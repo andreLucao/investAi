@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react';
 import { MapPin, DollarSign, Navigation, Check, Moon, Sun } from 'lucide-react';
-import { Card, CardContent } from '@/app/components/card';
+import { Card, CardContent } from '@/app/components/Card';
 import Link from 'next/link';
 
 const SelectionButton = ({ selected, onClick, children, icon: Icon, disabled }) => (
