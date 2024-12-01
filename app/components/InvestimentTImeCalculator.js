@@ -1,94 +1,150 @@
 "use client"
 import React, { useState } from 'react';
+import { Card, CardContent } from '../components/card';
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
 
 const InvestmentTimeCalculator = () => {
-  const [valorFuturo, setValorFuturo] = useState(5000);
-  const [investimentoMensal, setInvestimentoMensal] = useState(200);
-  const [rentabilidade, setRentabilidade] = useState(0.5); // Corrigido para permitir edição
-  const [tempo, setTempo] = useState('');
+  const [futureValue, setFutureValue] = useState(5000);
+  const [monthlyInvestment, setMonthlyInvestment] = useState(200);
+  const [monthlyReturn, setMonthlyReturn] = useState(0.5);
+  const [timeNeeded, setTimeNeeded] = useState('');
   const [graphData, setGraphData] = useState([]);
 
-  const calcularTempo = () => {
-    const r = rentabilidade / 100;
-    const FV = valorFuturo;
-    const P = investimentoMensal;
+  const calculateTime = () => {
+    const r = monthlyReturn / 100;
+    const FV = futureValue;
+    const P = monthlyInvestment;
 
     const t = Math.log((FV * r) / P + 1) / Math.log(1 + r);
-    setTempo(t.toFixed(2));
+    setTimeNeeded(t.toFixed(2));
 
     const newGraphData = [];
     for (let i = 100; i <= 1000; i += 100) {
       const newT = Math.log((FV * r) / i + 1) / Math.log(1 + r);
-      newGraphData.push({ investimento: i, tempo: newT.toFixed(2) });
+      newGraphData.push({ investment: i, time: newT.toFixed(2) });
     }
     setGraphData(newGraphData);
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">Calculadora de Tempo para Atingir o Objetivo</h2>
-
-      <div className="mb-3">
-        <label className="block mb-1">Quanto você quer ter no futuro?</label>
-        <input
-          type="number"
-          value={valorFuturo}
-          onChange={(e) => setValorFuturo(Number(e.target.value))}
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <div className="mb-3">
-        <label className="block mb-1">Quanto você pode investir por mês?</label>
-        <input
-          type="number"
-          value={investimentoMensal}
-          onChange={(e) => setInvestimentoMensal(Number(e.target.value))}
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <div className="mb-3">
-        <label className="block mb-1">Qual é a rentabilidade mensal (%):</label>
-        <input
-          type="number"
-          value={rentabilidade}
-          onChange={(e) => setRentabilidade(Number(e.target.value))}
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <button
-        onClick={calcularTempo}
-        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
-      >
-        Calcular Tempo
-      </button>
-
-      {tempo && (
-        <div className="mt-4 p-3 bg-green-50 rounded">
-          <h3 className="font-semibold">Tempo para atingir o seu objetivo:</h3>
-          <p className="text-lg">{tempo} meses</p>
+    <div className="space-y-4">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium dark:text-white">
+            Valor Futuro Desejado (R$)
+          </label>
+          <input
+            type="number"
+            value={futureValue}
+            onChange={(e) => setFutureValue(Number(e.target.value))}
+            className="w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
         </div>
-      )}
 
-      {graphData.length > 0 && (
-        <div className="mt-4">
-          <h3 className="font-bold mb-2">Variação do Tempo com o Investimento Mensal</h3>
-          <LineChart width={400} height={300} data={graphData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="investimento"
-              label={{ value: 'Investimento Mensal', position: 'insideBottom', offset: -5 }}
-            />
-            <YAxis label={{ value: 'Tempo (meses)', angle: -90, position: 'insideLeft' }} />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="tempo" stroke="#8884d8" />
-          </LineChart>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium dark:text-white">
+            Investimento Mensal (R$)
+          </label>
+          <input
+            type="number"
+            value={monthlyInvestment}
+            onChange={(e) => setMonthlyInvestment(Number(e.target.value))}
+            className="w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
         </div>
-      )}
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium dark:text-white">
+            Taxa de Juros Mensal (%)
+          </label>
+          <input
+            type="number"
+            value={monthlyReturn}
+            onChange={(e) => setMonthlyReturn(Number(e.target.value))}
+            className="w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            step="0.1"
+          />
+        </div>
+
+        <button
+          onClick={calculateTime}
+          className="w-full p-2 rounded-md text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 transition-all duration-300"
+        >
+          Calcular Tempo Necessário
+        </button>
+
+        {timeNeeded && (
+          <Card className="mt-4">
+            <CardContent className="p-4">
+              <div className="bg-purple-50 dark:bg-slate-700 rounded-md p-4">
+                <h3 className="font-semibold text-purple-900 dark:text-purple-100">
+                  Tempo Necessário para Atingir o Objetivo:
+                </h3>
+                <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
+                  {timeNeeded} meses
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {graphData.length > 0 && (
+          <Card className="mt-4">
+            <CardContent className="p-4">
+              <div className="bg-purple-50 dark:bg-slate-700 rounded-md p-4">
+                <h3 className="font-semibold text-purple-900 dark:text-purple-100 mb-4">
+                  Variação do Tempo com o Investimento Mensal
+                </h3>
+                <div className="overflow-x-auto">
+                  <LineChart 
+                    width={400} 
+                    height={300} 
+                    data={graphData}
+                    className="mx-auto"
+                  >
+                    <CartesianGrid 
+                      strokeDasharray="3 3" 
+                      className="dark:stroke-gray-600"
+                    />
+                    <XAxis
+                      dataKey="investment"
+                      label={{ 
+                        value: "Investimento Mensal (R$)", 
+                        position: "insideBottom", 
+                        offset: -5,
+                        className: "dark:fill-gray-300"
+                      }}
+                      className="dark:fill-gray-300"
+                    />
+                    <YAxis
+                      label={{ 
+                        value: "Tempo (meses)", 
+                        angle: -90, 
+                        position: "insideLeft",
+                        className: "dark:fill-gray-300"
+                      }}
+                      className="dark:fill-gray-300"
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        border: '1px solid #purple-500'
+                      }}
+                    />
+                    <Legend className="dark:fill-gray-300" />
+                    <Line 
+                      type="monotone" 
+                      dataKey="time" 
+                      stroke="#9333ea" 
+                      name="Tempo"
+                    />
+                  </LineChart>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
