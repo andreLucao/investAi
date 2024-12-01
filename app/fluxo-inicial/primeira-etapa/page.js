@@ -1,340 +1,241 @@
-'use client';
+"use client"
+import { useState, useEffect } from 'react';
+import { MapPin, DollarSign, Navigation, Check, Moon, Sun } from 'lucide-react';
+import { Card, CardContent } from '@/app/components/Card';
+import Link from 'next/link';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Mic, Square, Send } from 'lucide-react';
+const SelectionButton = ({ selected, onClick, children, icon: Icon, disabled }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`
+      w-full p-4 rounded-lg border flex items-center gap-3 transition-all duration-300
+      ${selected 
+        ? 'bg-purple-100 dark:bg-purple-900 border-purple-500 text-purple-700 dark:text-purple-200' 
+        : 'border-gray-300 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/50'
+      }
+      ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+      dark:bg-gray-800 dark:text-gray-200
+    `}
+  >
+    <Icon className={selected ? 'text-purple-600 dark:text-purple-300' : 'text-gray-500 dark:text-gray-400'} />
+    {children}
+  </button>
+);
 
 export default function FirstStage() {
-  const router = useRouter();
-  const [textInput, setTextInput] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [audioBlob, setAudioBlob] = useState(null);
-  const [audioURL, setAudioURL] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [transcriptionHistory, setTranscriptionHistory] = useState([]);
-  const [llamaAnalysis, setLlamaAnalysis] = useState(null);
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedIncome, setSelectedIncome] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  const questions = [
-    {
-      id: 'income',
-      question: 'Qual é sua renda média atual?',
-      subtitle: null,
-      placeholder: 'Ex: Minha renda mensal é R$ 3.000'
-    },
-    {
-      id: 'children',
-      question: 'Você tem filhos?',
-      subtitle: null,
-      placeholder:'Ex: Sim, tenho 2 filhos'
-    },
-    {
-      id: 'debts',
-      question: 'Atualmente você tem dívidas?',
-      subtitle: '(se sim, quanto)',
-      placeholder: 'Ex: Sim, tenho R$ 5.000 em dívidas no cartão'
-    },
-    {
-      id: 'location',
-      question: 'Me fale de onde você é.',
-      subtitle: '(Isto nos ajudara a calcular mais precisamente os seus custos)',
-      placeholder: 'Ex: Moro em São Paulo, SP'
-    },
-    {
-      id: 'gambling',
-      question: 'Você já apostou ou tem costume de apostar?',
-      subtitle: '(se sim, por que você aposta?)',
-      placeholder: 'Ex: Não, nunca apostei'
+  useEffect(() => {
+    // Check system preference on mount
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
     }
+  }, []);
 
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle('dark');
+  };
+
+  const countries = [
+    { id: 'brazil', name: 'Brasil', icon: '🇧🇷' },
+    { id: 'mexico', name: 'México', icon: '🇲🇽' },
+    { id: 'colombia', name: 'Colômbia', icon: '🇨🇴' },
+    { id: 'chile', name: 'Chile', icon: '🇨🇱' }
+  ];
+  
+  const regions = {
+    brazil: [
+      { id: 'norte', name: 'Norte' },
+      { id: 'nordeste', name: 'Nordeste' },
+      { id: 'sudeste', name: 'Sudeste' },
+      { id: 'sul', name: 'Sul' },
+      { id: 'centro-oeste', name: 'Centro-Oeste' }
+    ],
+    mexico: [
+      { id: 'norte', name: 'Norte' },
+      { id: 'sur', name: 'Sur' },
+      { id: 'este', name: 'Este' },
+      { id: 'oeste', name: 'Oeste' },
+      { id: 'centro', name: 'Centro' }
+    ],
+    colombia: [
+      { id: 'andina', name: 'Región Andina' },
+      { id: 'caribe', name: 'Región Caribe' },
+      { id: 'pacifica', name: 'Región Pacífica' },
+      { id: 'orinoquia', name: 'Región Orinoquía' },
+      { id: 'amazonia', name: 'Región Amazonía' }
+    ],
+    chile: [
+      { id: 'norte-grande', name: 'Norte Grande' },
+      { id: 'norte-chico', name: 'Norte Chico' },
+      { id: 'zona-central', name: 'Zona Central' },
+      { id: 'zona-sur', name: 'Zona Sur' },
+      { id: 'zona-austral', name: 'Zona Austral' }
+    ]
+  };
+
+  const incomeRanges = [
+    { id: 'low', name: '1-2 salários mínimos' },
+    { id: 'medium', name: '3-4 salários mínimos' },
+    { id: 'high', name: '+4 salários mínimos' }
   ];
 
-  useEffect(() => {
-    if (llamaAnalysis) {
-      console.log('LLaMA Analysis Updated:', llamaAnalysis);
-    }
-  }, [llamaAnalysis]);
-
-  const sendToLlama = async (history) => {
-    try {
-      const completeHistory = history.map(entry => ({
-        ...entry,
-        questionDetails: questions.find(q => q.id === entry.questionId) || {},
-      }));
-
-      const response = await fetch('/api/llama', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          transcriptionHistory: completeHistory
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to process with LLaMA');
-      }
-
-      const llamaResponse = await response.json();
-      setLlamaAnalysis(llamaResponse);
-      console.log('Complete LLaMA Response:', llamaResponse);
-      
-      localStorage.setItem('llamaParseStage1', JSON.stringify({
-        timestamp: new Date().toISOString(),
-        response: answers,
-        transcriptionHistory: completeHistory,
-        llamaAnalysis: llamaResponse,
-        questionnaire: {
-          totalQuestions: questions.length,
-          completedQuestions: history.length,
-          questionTopics: questions.map(q => q.id)
-        }
-      }));
-
-    } catch (error) {
-      console.error('Error sending to LLaMA:', error);
-      setLlamaAnalysis({ error: 'Failed to get analysis' });
+  const handleNext = () => {
+    if (currentStep < 2) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  const advanceToNextQuestion = async () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setIsLoading(false);
-      setIsTranscribing(false);
-    } else {
-      await sendToLlama(transcriptionHistory);
-      router.push('/fluxo-inicial/segunda-etapa');
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
-        }
-      };
+  const ConfirmButton = ({ onClick, disabled }) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        w-full p-3 bg-gradient-to-r from-purple-500 to-purple-600 
+        hover:from-purple-600 hover:to-purple-700 text-white rounded-lg
+        flex items-center justify-center gap-2 transition-all duration-300
+        disabled:opacity-50 disabled:cursor-not-allowed
+        dark:from-purple-600 dark:to-purple-800
+        dark:hover:from-purple-700 dark:hover:to-purple-900
+      `}
+    >
+      <Check size={20} />
+      Confirmar Seleção
+    </button>
+  );
 
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        setAudioBlob(blob);
-        const url = URL.createObjectURL(blob);
-        setAudioURL(url);
-        chunksRef.current = [];
-        handleAudioSubmission(blob);
-      };
-
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Error accessing microphone:', error);
-      alert('Error accessing microphone. Please make sure you have granted microphone permissions.');
+  const steps = [
+    {
+      title: 'Selecione seu país',
+      content: (
+        <div className="space-y-3">
+          {countries.map((country) => (
+            <SelectionButton
+              key={country.id}
+              selected={selectedCountry === country.id}
+              onClick={() => setSelectedCountry(country.id)}
+              icon={MapPin}
+            >
+              <span className="mr-2">{country.icon}</span>
+              {country.name}
+            </SelectionButton>
+          ))}
+          <ConfirmButton 
+            onClick={handleNext}
+            disabled={!selectedCountry}
+          />
+        </div>
+      )
+    },
+    {
+      title: 'Selecione sua região',
+      content: selectedCountry && (
+        <div className="space-y-3">
+          {regions[selectedCountry].map((region) => (
+            <SelectionButton
+              key={region.id}
+              selected={selectedRegion === region.id}
+              onClick={() => setSelectedRegion(region.id)}
+              icon={Navigation}
+            >
+              {region.name}
+            </SelectionButton>
+          ))}
+          <ConfirmButton 
+            onClick={handleNext}
+            disabled={!selectedRegion}
+          />
+        </div>
+      )
+    },
+    {
+      title: 'Selecione sua renda',
+      content: (
+        <div className="space-y-3">
+          {incomeRanges.map((range) => (
+            <SelectionButton
+              key={range.id}
+              selected={selectedIncome === range.id}
+              onClick={() => setSelectedIncome(range.id)}
+              icon={DollarSign}
+            >
+              {range.name}
+            </SelectionButton>
+          ))}
+          {selectedIncome && (
+            <Link href='/fluxo-inicial/segunda-etapa' className="block">
+              <ConfirmButton 
+                onClick={() => console.log({ selectedCountry, selectedRegion, selectedIncome })}
+                disabled={!selectedIncome}
+              />
+            </Link>
+          )}
+        </div>
+      )
     }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-      setIsRecording(false);
-    }
-  };
-
-  const handleAudioSubmission = async (blob) => {
-    setIsTranscribing(true);
-    
-    try {
-      const formData = new FormData();
-      formData.append('audio', blob, 'audio.webm');
-
-      const response = await fetch('/api/transcribe', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Transcription failed');
-      }
-
-      const data = await response.json();
-      const currentQuestion = questions[currentQuestionIndex];
-      
-      const newEntry = {
-        questionId: currentQuestion.id,
-        question: currentQuestion.question,
-        transcription: data.text,
-        timestamp: new Date().toISOString(),
-        metadata: {
-          inputType: 'audio',
-          questionNumber: currentQuestionIndex + 1,
-          hasSubtitle: Boolean(currentQuestion.subtitle),
-          subtitle: currentQuestion.subtitle
-        }
-      };
-
-      setAnswers(prev => ({
-        ...prev,
-        [currentQuestion.id]: data.text
-      }));
-
-      setTranscriptionHistory(prev => [...prev, newEntry]);
-
-      setTimeout(() => {
-        advanceToNextQuestion();
-      }, 1000);
-
-    } catch (error) {
-      console.error('Error processing audio:', error);
-      alert('Erro ao processar o áudio. Por favor, tente novamente.');
-    } finally {
-      setIsTranscribing(false);
-    }
-  };
-
-  const handleTextSubmit = async (e) => {
-    e.preventDefault();
-    if (!textInput.trim()) return;
-
-    setIsLoading(true);
-    try {
-      const currentQuestion = questions[currentQuestionIndex];
-      
-      const newEntry = {
-        questionId: currentQuestion.id,
-        question: currentQuestion.question,
-        transcription: textInput,
-        timestamp: new Date().toISOString(),
-        metadata: {
-          inputType: 'text',
-          questionNumber: currentQuestionIndex + 1,
-          hasSubtitle: Boolean(currentQuestion.subtitle),
-          subtitle: currentQuestion.subtitle
-        }
-      };
-
-      setAnswers(prev => ({
-        ...prev,
-        [currentQuestion.id]: textInput
-      }));
-
-      setTranscriptionHistory(prev => [...prev, newEntry]);
-      setTextInput('');
-      await advanceToNextQuestion();
-    } catch (error) {
-      console.error('Error processing text:', error);
-      alert('Erro ao processar o texto. Por favor, tente novamente.');
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (audioURL) {
-        URL.revokeObjectURL(audioURL);
-      }
-      if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
-        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [audioURL]);
-
-  const currentQuestion = questions[currentQuestionIndex];
+  ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="bg-white rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.2)] max-w-md w-full space-y-8 text-center p-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]">
-        <div className="space-y-6">
-          <div>
-            <p className="text-lg font-medium text-gray-900">{currentQuestion.question}</p>
-            {currentQuestion.subtitle && (
-              <p className="text-sm text-gray-600 mt-1">{currentQuestion.subtitle}</p>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <button
+        onClick={toggleDarkMode}
+        className="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-800 transition-colors duration-300"
+      >
+        {isDarkMode ? (
+          <Sun className="w-6 h-6 text-yellow-500" />
+        ) : (
+          <Moon className="w-6 h-6 text-gray-700" />
+        )}
+      </button>
+
+      <Card className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg">
+        <CardContent className="p-6 space-y-6">
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                {steps[currentStep].title}
+              </h2>
+              <div className="mt-4 flex justify-center space-x-2">
+                {steps.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-2 w-16 rounded-full transition-all duration-300 ${
+                      index <= currentStep ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6">
+              {steps[currentStep].content}
+            </div>
+
+            {currentStep > 0 && (
+              <button
+                onClick={handleBack}
+                className="w-full mt-4 p-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 
+                         dark:hover:text-purple-300 transition-colors duration-300"
+              >
+                Voltar
+              </button>
             )}
           </div>
-          
-          <form onSubmit={handleTextSubmit} className="mt-8">
-            <div className="space-y-4">
-              <div className="relative flex items-center">
-                <input
-                  type="text"
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  placeholder={currentQuestion.placeholder}
-                  className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  disabled={isLoading || isRecording}
-                />
-                <button
-                  type="button"
-                  onClick={isRecording ? stopRecording : startRecording}
-                  className={`absolute right-2 p-2 transition-colors ${
-                    isLoading ? 'text-gray-400 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                  disabled={isLoading}
-                >
-                  {isRecording ? (
-                    <Square className="w-5 h-5 text-red-600" />
-                  ) : (
-                    <Mic className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-
-              {textInput.trim() && (
-                <button
-                  type="submit"
-                  disabled={isLoading || isRecording}
-                  className={`w-full flex items-center justify-center gap-2 rounded-full py-3 px-4 transition-colors ${
-                    isLoading || isRecording
-                      ? 'bg-purple-400 cursor-not-allowed'
-                      : 'bg-purple-600 hover:bg-purple-700'
-                  } text-white`}
-                >
-                  <Send className="w-4 h-4" />
-                  Enviar
-                </button>
-              )}
-
-              {isRecording && (
-                <div className="text-sm text-red-600">
-                  Gravando...
-                </div>
-              )}
-              
-              {isTranscribing && (
-                <div className="text-sm text-red-600">
-                  Transcrevendo...
-                </div>
-              )}
-
-              {llamaAnalysis && (
-                <div className="text-sm text-gray-600">
-                  Analysis complete! Check console for details.
-                </div>
-              )}
-            </div>
-          </form>
-          
-          <div className="text-sm text-gray-500">
-            Questão {currentQuestionIndex} de {questions.length}
-            <div className="mb-4">
-              <div className="h-2 bg-gray-200 rounded-full">
-                <div 
-                  className="h-full bg-purple-500 rounded-full transition-all duration-300 ease-in-out mt-5"
-                  style={{ width: `${((currentQuestionIndex) / questions.length) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
