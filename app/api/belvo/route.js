@@ -18,7 +18,7 @@ export async function POST() {
     const client = new belvo({
       secretId: process.env.BELVO_CLIENT_ID,
       secretPassword: process.env.BELVO_CLIENT_SECRET,
-      baseURL: 'https://sandbox.belvo.com' // URL para ambiente de desenvolvimento Brasil
+      baseURL: 'https://development.belvo.com' // URL para ambiente de desenvolvimento Brasil
     });
 
     // Test the connection by getting institutions
