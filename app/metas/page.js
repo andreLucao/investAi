@@ -6,7 +6,7 @@ import { Button } from '../components/button';
 import { Outfit } from 'next/font/google'
 import { Target, Plus, Edit2, Trash2, Save, TrendingUp, CircleDollarSign } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import SideBar from '@/components/ui/SideBar';
+import SideBar from '../components/SideBar';
 
 const outfit = Outfit({ subsets: ['latin'] })
 
