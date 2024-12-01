@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mic, Square, Send, Moon, Sun } from 'lucide-react';
-import { Card, CardContent } from '@/app/components/card';
+import { Card, CardContent } from '@/app/components/Card';
 
 export default function Page1() {
   const router = useRouter();
