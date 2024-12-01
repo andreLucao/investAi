@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Outfit } from 'next/font/google';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
+import { Button } from '../components/button';
+import { Outfit } from 'next/font/google'
 import { Target, Plus, Edit2, Trash2, Save, TrendingUp, CircleDollarSign } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import SideBar from '@/components/ui/SideBar';

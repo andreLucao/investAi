@@ -1,8 +1,8 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
 import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
+import { Button } from '../components/button';
 import { BotIcon, TrendingUp, DollarSign, Target } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
