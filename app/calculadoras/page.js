@@ -1,104 +1,128 @@
-'use client';
+"use client"
 
 import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
+import { Button } from '../components/button';
+import { Outfit } from 'next/font/google'
+import { Calculator, Check } from 'lucide-react';
 import InvestmentTimeCalculator from '../components/InvestimentTImeCalculator';
 import FutureValCalc from '../components/FutureValCalc';
 import MonthInvCalc from '../components/MonthInCalc';
 import DividaCalc from '../components/DividaCalc';
-import CardCalculator from '../components/CardCalculator';
+import SideBar from '../components/SideBar';
+
+const outfit = Outfit({ subsets: ['latin'] })
+
+const calculators = [
+  {
+    id: 'investmentTime',
+    title: 'Tempo para Atingir o Objetivo',
+    component: InvestmentTimeCalculator
+  },
+  {
+    id: 'futureValue',
+    title: 'Calculadora de Valor Futuro',
+    component: FutureValCalc
+  },
+  {
+    id: 'monthlyInvestment',
+    title: 'Investimento Mensal Necessário',
+    component: MonthInvCalc
+  },
+  {
+    id: 'debtGrowth',
+    title: 'Crescimento de Dívida',
+    component: DividaCalc
+  }
+];
+
+const CalculatorSelector = ({ title, selected, onToggle }) => (
+  <Card className="cursor-pointer transition-all duration-300 hover:shadow-lg dark:bg-slate-800" onClick={onToggle}>
+    <CardContent className="p-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-medium dark:text-white">{title}</h3>
+        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+          selected ? 'bg-gradient-to-r from-purple-500 to-purple-600' : 'bg-slate-200 dark:bg-slate-700'
+        }`}>
+          {selected && <Check className="w-4 h-4 text-white" />}
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
 
 export default function FinancialCalculators() {
-    const [selectedCalculators, setSelectedCalculators] = useState([]);
+  const [expanded, setExpanded] = useState(false);
+  const [selectedCalculators, setSelectedCalculators] = useState([]);
 
-    const handleCheckboxChange = (e) => {
-        const { value, checked } = e.target;
-        setSelectedCalculators(prevState => 
-            checked ? [...prevState, value] : prevState.filter(item => item !== value)
-        );
-    };
-
-    return (
-        <div className="bg-gradient-to-r from-blue-500 to-teal-500 min-h-screen p-8 font-sans">
-            <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105">
-                <h1 className="text-5xl font-extrabold mb-8 text-center text-blue-600 shadow-lg p-4 rounded-lg">
-                    Calculadoras Financeiras
-                </h1>
-
-                <div className="mb-8 text-center">
-                    <h2 className="text-2xl font-semibold mb-6 text-gray-800 tracking-wider">
-                        Escolha as calculadoras:
-                    </h2>
-
-                    <div className="grid grid-cols-2 gap-4 justify-center">
-                        <label className="flex items-center space-x-2 cursor-pointer text-lg">
-                            <input 
-                                type="checkbox" 
-                                value="investmentTime" 
-                                checked={selectedCalculators.includes('investmentTime')}
-                                onChange={handleCheckboxChange}
-                                className="form-checkbox h-6 w-6 text-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out hover:ring-2 hover:ring-blue-400"
-                            />
-                            <span className="text-lg font-medium text-gray-700 hover:text-blue-600 transition duration-300">Tempo para Atingir o Objetivo</span>
-                        </label>
-
-                        <label className="flex items-center space-x-2 cursor-pointer text-lg">
-                            <input 
-                                type="checkbox" 
-                                value="futureValue" 
-                                checked={selectedCalculators.includes('futureValue')}
-                                onChange={handleCheckboxChange}
-                                className="form-checkbox h-6 w-6 text-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out hover:ring-2 hover:ring-blue-400"
-                            />
-                            <span className="text-lg font-medium text-gray-700 hover:text-blue-600 transition duration-300">Calculadora de Valor Futuro</span>
-                        </label>
-
-                        <label className="flex items-center space-x-2 cursor-pointer text-lg">
-                            <input 
-                                type="checkbox" 
-                                value="monthlyInvestment" 
-                                checked={selectedCalculators.includes('monthlyInvestment')}
-                                onChange={handleCheckboxChange}
-                                className="form-checkbox h-6 w-6 text-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out hover:ring-2 hover:ring-blue-400"
-                            />
-                            <span className="text-lg font-medium text-gray-700 hover:text-blue-600 transition duration-300">Investimento Mensal Necessário</span>
-                        </label>
-
-                        <label className="flex items-center space-x-2 cursor-pointer text-lg">
-                            <input 
-                                type="checkbox" 
-                                value="debtGrowth" 
-                                checked={selectedCalculators.includes('debtGrowth')}
-                                onChange={handleCheckboxChange}
-                                className="form-checkbox h-6 w-6 text-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out hover:ring-2 hover:ring-blue-400"
-                            />
-                            <span className="text-lg font-medium text-gray-700 hover:text-blue-600 transition duration-300">Crescimento de Dívida</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {selectedCalculators.includes('investmentTime') && (
-                        <CardCalculator title="Tempo para Atingir o Objetivo">
-                            <InvestmentTimeCalculator />
-                        </CardCalculator>
-                    )}
-                    {selectedCalculators.includes('futureValue') && (
-                        <CardCalculator title="Calculadora de Valor Futuro">
-                            <FutureValCalc />
-                        </CardCalculator>
-                    )}
-                    {selectedCalculators.includes('monthlyInvestment') && (
-                        <CardCalculator title="Investimento Mensal Necessário">
-                            <MonthInvCalc />
-                        </CardCalculator>
-                    )}
-                    {selectedCalculators.includes('debtGrowth') && (
-                        <CardCalculator title="Crescimento de Dívida">
-                            <DividaCalc />
-                        </CardCalculator>
-                    )}
-                </div>
-            </div>
-        </div>
+  const handleCalculatorToggle = (calculatorId) => {
+    setSelectedCalculators(prev =>
+      prev.includes(calculatorId)
+        ? prev.filter(id => id !== calculatorId)
+        : [...prev, calculatorId]
     );
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 dark:text-white">
+      <SideBar expanded={expanded} setExpanded={setExpanded} />
+      
+      <div className={`transition-all duration-300 ${expanded ? 'ml-64' : 'ml-20'} p-8`}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className={`${outfit.className} text-4xl md:text-5xl font-bold flex items-center`}>
+              <span className="text-gray-500 dark:text-gray-300 mr-4">Calculadoras</span>
+              <Calculator className="inline-block w-8 h-8 text-purple-500" />
+            </h2>
+          </div>
+
+          <Card className="mb-8 dark:bg-slate-800">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold dark:text-white">
+                Escolha as calculadoras
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {calculators.map(calc => (
+                  <CalculatorSelector
+                    key={calc.id}
+                    title={calc.title}
+                    selected={selectedCalculators.includes(calc.id)}
+                    onToggle={() => handleCalculatorToggle(calc.id)}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {selectedCalculators.map(calcId => {
+              const calculator = calculators.find(c => c.id === calcId);
+              const CalcComponent = calculator.component;
+              
+              return (
+                <Card key={calcId} className="dark:bg-slate-800">
+                  <CardHeader>
+                    <CardTitle className="text-xl font-semibold dark:text-white">
+                      {calculator.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CalcComponent />
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              © 2024 Investe a.í. Todos os direitos reservados.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
