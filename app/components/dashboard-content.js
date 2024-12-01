@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
+import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Progress } from "@/components/ui/progress"
 import { Button } from '../components/button';
 import { BotIcon, TrendingUp, DollarSign, Target } from "lucide-react"

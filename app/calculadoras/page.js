@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/button';
 import { Outfit } from 'next/font/google'
 import { Calculator, Check } from 'lucide-react';

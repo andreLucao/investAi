@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/button';
 import { Bot } from 'lucide-react';
 import { useRouter } from 'next/navigation';

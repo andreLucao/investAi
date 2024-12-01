@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/button';
 import { Outfit } from 'next/font/google'
 import { Target, Plus, Edit2, Trash2, Save, TrendingUp, CircleDollarSign } from 'lucide-react';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/card';
+import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { ShieldAlert } from 'lucide-react';
 
 const EmergencyFundCard = () => {
