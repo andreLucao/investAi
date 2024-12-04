@@ -13,7 +13,8 @@ const InvestmentTimeCalculator = () => {
     const P = monthlyInvestment;
     
     const t = Math.log((FV * r) / P + 1) / Math.log(1 + r);
-    setTimeNeeded(t.toFixed(2));
+    const roundedTime = Math.round(t);
+    setTimeNeeded(roundedTime);
   };
 
   return (
@@ -63,7 +64,7 @@ const InvestmentTimeCalculator = () => {
           Calcular Tempo Necessário
         </button>
 
-        {timeNeeded && (
+        {timeNeeded !== null && (
           <Card className="mt-4">
             <CardContent className="p-4">
               <div className="bg-purple-50 dark:bg-slate-700 rounded-md p-4">
@@ -71,7 +72,7 @@ const InvestmentTimeCalculator = () => {
                   Tempo Necessário para Atingir o Objetivo:
                 </h3>
                 <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                  {timeNeeded} meses
+                  {parseInt(timeNeeded)} {parseInt(timeNeeded) === 1 ? 'mês' : 'meses'}
                 </p>
               </div>
             </CardContent>
@@ -85,12 +86,11 @@ const InvestmentTimeCalculator = () => {
 export default function CalculationsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Calculadoras</h1>
+      <h1 className="text-3xl font-bold mb-6 dark:text-white">Calculadoras</h1>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <InvestmentTimeCalculator />
-        {/* Inclua outros componentes aqui, como FutureValCalc, MonthInvCalc */}
       </div>
     </div>
   );
-};
+}

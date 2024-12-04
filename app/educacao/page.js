@@ -11,7 +11,7 @@ const outfit = Outfit({ subsets: ['latin'] })
 const modules = [
   {
     title: "Fundamentos Básicos",
-    topics: ["Educação financeira", "Necessidades vs. desejos", "Orçamento pessoal", "Reserva de emergência"],
+    topics: ["Necessidades vs. desejos", "Orçamento pessoal", "Reserva de emergência"],
     color: "from-blue-500 to-blue-600",
     unlocked: true
   },
