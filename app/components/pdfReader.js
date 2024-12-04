@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 
 const PDFReader = ({ onComplete }) => {
-  const [pdfText, setPdfText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [pdfjsLib, setPdfjsLib] = useState(null);
@@ -50,7 +49,6 @@ const PDFReader = ({ onComplete }) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    setPdfText('');
     setError('');
 
     if (file.type !== 'application/pdf') {
@@ -61,7 +59,6 @@ const PDFReader = ({ onComplete }) => {
     setIsLoading(true);
     try {
       const text = await extractText(file);
-      setPdfText(text);
       if (onComplete) {
         onComplete(text);
       }
@@ -97,17 +94,6 @@ const PDFReader = ({ onComplete }) => {
         <div className="p-4 rounded-lg border border-red-800 
           bg-red-900/50 text-red-400">
           {error}
-        </div>
-      )}
-
-      {pdfText && (
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold text-white mb-2">PDF Content:</h3>
-          <div className="p-4 rounded-lg border border-gray-700 
-            bg-gray-900/50 whitespace-pre-wrap max-h-96 overflow-y-auto
-            text-gray-200">
-            {pdfText}
-          </div>
         </div>
       )}
     </div>

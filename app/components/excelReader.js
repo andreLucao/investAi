@@ -3,7 +3,6 @@ import { useState } from 'react';
 import * as XLSX from 'xlsx';
 
 const ExcelReader = ({ onComplete }) => {
-  const [excelData, setExcelData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -36,7 +35,6 @@ const ExcelReader = ({ onComplete }) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    setExcelData(null);
     setError('');
 
     const allowedTypes = [
@@ -52,7 +50,6 @@ const ExcelReader = ({ onComplete }) => {
     setIsLoading(true);
     try {
       const data = await readExcelFile(file);
-      setExcelData(data);
       if (onComplete) {
         onComplete(data);
       }
@@ -89,32 +86,6 @@ const ExcelReader = ({ onComplete }) => {
         <div className="p-4 rounded-lg border border-red-800 
           bg-red-900/50 text-red-400">
           {error}
-        </div>
-      )}
-
-      {excelData && (
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold text-white mb-2">Excel Content:</h3>
-          <div className="p-4 rounded-lg border border-gray-700 
-            bg-gray-900/50 overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-700">
-              <tbody>
-                {excelData.map((row, rowIndex) => (
-                  <tr key={rowIndex} className={rowIndex === 0 ? 'bg-gray-800' : ''}>
-                    {row.map((cell, cellIndex) => (
-                      <td
-                        key={cellIndex}
-                        className="px-3 py-2 whitespace-nowrap text-sm border border-gray-700 
-                          text-gray-200"
-                      >
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       )}
     </div>

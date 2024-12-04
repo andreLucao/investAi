@@ -8,7 +8,8 @@ const people = [
   { 
     name: 'Open Finance', 
     imageUrl: 'https://yt3.googleusercontent.com/bEBe176AkMzGL5Vz4UnCzIUpwdalwdM7be46p37X4HGlqe3I2myqHUnz-P_DHvNbtqD6_yE_KYA=s900-c-k-c0x00ffffff-no-rj', 
-    locked: true 
+    locked: true,
+    comingSoon: true
   },
   { 
     name: 'PDF', 
@@ -27,7 +28,6 @@ export default function ImageModal() {
   const [excelContent, setExcelContent] = useState(null)
 
   useEffect(() => {
-    // Enable dark mode by default
     document.documentElement.classList.add('dark');
 
     const handleEscape = (event) => {
@@ -96,7 +96,7 @@ export default function ImageModal() {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-3 gap-1 mt-4">
           {people.map((person) => (
             <div 
               key={person.name} 
@@ -124,19 +124,22 @@ export default function ImageModal() {
               >
                 {person.name}
               </p>
+              {person.comingSoon && (
+                <span className="text-xs text-gray-500">em breve</span>
+              )}
             </div>
           ))}
         </div>
 
         {selectedOption === 'PDF' && (
           <div className="mt-6 border-t border-gray-700 pt-6">
-            <PDFReader onComplete={handlePdfComplete} />
+            <PDFReader onComplete={handlePdfComplete} hidePreview />
           </div>
         )}
 
         {selectedOption === 'Excel' && (
           <div className="mt-6 border-t border-gray-700 pt-6">
-            <ExcelReader onComplete={handleExcelComplete} />
+            <ExcelReader onComplete={handleExcelComplete} hidePreview />
           </div>
         )}
 
@@ -144,12 +147,12 @@ export default function ImageModal() {
           <button
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
-            className={`px-6 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300
-              ${!isSubmitDisabled
-                ? 'bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white' 
-                : 'bg-gray-700 text-gray-400 cursor-not-allowed'}`}
+            className={`w-full max-w-xs p-4 rounded-lg border border-gray-600 
+              hover:border-purple-700 hover:bg-purple-900/50 
+              bg-gray-800 text-gray-200 transition-all duration-300
+              ${!isSubmitDisabled ? '' : 'opacity-50 cursor-not-allowed'}`}
           >
-            Submit
+            Upload
           </button>
         </div>
       </div>
