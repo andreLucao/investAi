@@ -58,7 +58,7 @@ export default function ImageModal() {
       if (excelContent) {
         console.log('Excel Content:', excelContent)
       }
-      window.location.href = '/quarta-etapa';
+      window.location.href = '/fluxo-inicial/quinta-etapa';
     }
   }
 
