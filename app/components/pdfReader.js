@@ -75,31 +75,37 @@ const PDFReader = ({ onComplete }) => {
   return (
     <div className="w-full">
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">
+        <label className="block text-xl font-semibold text-gray-200 mb-2">
           Choose a PDF file
         </label>
         <input
           type="file"
           accept=".pdf"
           onChange={handleFileChange}
-          className="block w-full p-2 border rounded"
+          className="w-full p-4 rounded-lg border border-gray-600 
+            hover:border-purple-700
+            hover:bg-purple-900/50 bg-gray-800 text-gray-200
+            transition-all duration-300"
         />
       </div>
 
       {isLoading && (
-        <div className="text-blue-600">Loading PDF content...</div>
+        <div className="text-purple-400">Loading PDF content...</div>
       )}
 
       {error && (
-        <div className="text-red-600 p-2 mb-4 border border-red-200 rounded bg-red-50">
+        <div className="p-4 rounded-lg border border-red-800 
+          bg-red-900/50 text-red-400">
           {error}
         </div>
       )}
 
       {pdfText && (
-        <div className="mt-4">
-          <h3 className="font-bold mb-2">PDF Content:</h3>
-          <div className="p-4 border rounded bg-gray-50 whitespace-pre-wrap max-h-96 overflow-y-auto">
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-white mb-2">PDF Content:</h3>
+          <div className="p-4 rounded-lg border border-gray-700 
+            bg-gray-900/50 whitespace-pre-wrap max-h-96 overflow-y-auto
+            text-gray-200">
             {pdfText}
           </div>
         </div>

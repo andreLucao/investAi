@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import ImageModal from '../components/UploadFile';
+import ImageModal from '../fluxo-inicial/quarta-etapa/page';
 
 
 export default function PDF() {

@@ -66,46 +66,46 @@ const ExcelReader = ({ onComplete }) => {
   return (
     <div className="w-full">
       <div className="mb-4">
-        <label className="block text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        <label className="block text-xl font-semibold text-gray-200 mb-2">
           Choose an Excel file
         </label>
         <input
           type="file"
           accept=".xlsx,.xls"
           onChange={handleFileChange}
-          className="w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 
-            hover:border-purple-300 dark:hover:border-purple-700 
-            hover:bg-purple-50 dark:hover:bg-purple-900/50
-            dark:bg-gray-800 dark:text-gray-200
+          className="w-full p-4 rounded-lg border border-gray-600 
+            hover:border-purple-700 
+            hover:bg-purple-900/50 
+            bg-gray-800 text-gray-200
             transition-all duration-300"
         />
       </div>
 
       {isLoading && (
-        <div className="text-purple-600 dark:text-purple-400">Loading Excel content...</div>
+        <div className="text-purple-400">Loading Excel content...</div>
       )}
 
       {error && (
-        <div className="p-4 rounded-lg border border-red-200 dark:border-red-800 
-          bg-red-50 dark:bg-red-900/50 text-red-600 dark:text-red-400">
+        <div className="p-4 rounded-lg border border-red-800 
+          bg-red-900/50 text-red-400">
           {error}
         </div>
       )}
 
       {excelData && (
         <div className="mt-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Excel Content:</h3>
-          <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 
-            bg-gray-50 dark:bg-gray-900/50 overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <h3 className="text-lg font-semibold text-white mb-2">Excel Content:</h3>
+          <div className="p-4 rounded-lg border border-gray-700 
+            bg-gray-900/50 overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-700">
               <tbody>
                 {excelData.map((row, rowIndex) => (
-                  <tr key={rowIndex} className={rowIndex === 0 ? 'bg-gray-100 dark:bg-gray-800' : ''}>
+                  <tr key={rowIndex} className={rowIndex === 0 ? 'bg-gray-800' : ''}>
                     {row.map((cell, cellIndex) => (
                       <td
                         key={cellIndex}
-                        className="px-3 py-2 whitespace-nowrap text-sm border border-gray-200 
-                          dark:border-gray-700 text-gray-900 dark:text-gray-200"
+                        className="px-3 py-2 whitespace-nowrap text-sm border border-gray-700 
+                          text-gray-200"
                       >
                         {cell}
                       </td>
