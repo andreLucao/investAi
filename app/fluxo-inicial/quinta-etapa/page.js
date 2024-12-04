@@ -19,7 +19,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center space-y-4">
       <button
-        onClick={() => signIn('google', { callbackUrl: '/' })}
+        onClick={() => signIn('google', { callbackUrl: '/fluxo-inicial/sexta-etapa' })}
         className="rounded-lg bg-white px-6 py-3 text-gray-900 shadow-md hover:bg-gray-100"
       >
         Sign in with Google
