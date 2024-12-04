@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/button';
 import { Outfit } from 'next/font/google'
-import { Target, Plus, Edit2, Trash2, Save, TrendingUp, CircleDollarSign } from 'lucide-react';
+import { Target, Plus, Edit2, Trash2, Save, TrendingUp, CircleDollarSign, Moon, Sun } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import SideBar from '../components/SideBar';
 
@@ -19,7 +19,7 @@ const DEFAULT_COLORS = [
   'from-red-500 to-red-600',
 ];
 
-const EMOJIS = ['🎯', '🎓','🏠', '🎮', '💻',  '🚗', '🛩️', '📚', '💍', '🏖️'];
+const EMOJIS = ['🎯', '🎓','🏠', '🎮', '💻', '🚗', '🛩️', '📚', '💍', '🏖️'];
 
 const StatsCard = ({ title, value, icon: Icon, color }) => (
   <Card className="dark:bg-slate-800 dark:text-white">
@@ -90,6 +90,7 @@ export default function Goals() {
   const [goals, setGoals] = useState([]);
   const [isAddingGoal, setIsAddingGoal] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
+  const [darkMode, setDarkMode] = useState(true);
   
   const [newGoal, setNewGoal] = useState({
     name: '',
@@ -104,11 +105,21 @@ export default function Goals() {
     if (savedGoals) {
       setGoals(JSON.parse(savedGoals));
     }
-  }, []);
+
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   useEffect(() => {
     localStorage.setItem('goals', JSON.stringify(goals));
   }, [goals]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   const handleAddGoal = () => {
     if (!newGoal.name || !newGoal.targetAmount || !newGoal.currentAmount) {
@@ -176,6 +187,19 @@ export default function Goals() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 dark:text-white">
+      <div className="absolute top-4 right-4 z-50">
+        <button 
+          onClick={toggleDarkMode}
+          className="p-2 rounded-full transition-colors dark:bg-slate-700 dark:hover:bg-slate-600 bg-white hover:bg-gray-100"
+          aria-label={darkMode ? 'Modo Claro' : 'Modo Escuro'}
+        >
+          {darkMode 
+            ? <Sun className="w-6 h-6 text-yellow-500" />
+            : <Moon className="w-6 h-6 text-purple-600" />
+          }
+        </button>
+      </div>
+
       <SideBar expanded={expanded} setExpanded={setExpanded} />
       
       <div className={`transition-all duration-300 ${expanded ? 'ml-64' : 'ml-20'} p-8`}>
@@ -310,8 +334,7 @@ export default function Goals() {
                           <Save className="w-4 h-4 mr-2" />
                           Salvar
                         </Button>
-                        <Button onClick={() => setEditingGoal(null)} variant="outline">
-                          Cancelar
+                        <Button onClick={() => setEditingGoal(null)} variant="outline">Cancelar
                         </Button>
                       </div>
                     </div>

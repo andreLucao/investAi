@@ -12,34 +12,23 @@ export default function Profile() {
   const router = useRouter()
   const [showSuccess, setShowSuccess] = useState(false)
   const [profile, setProfile] = useState({
-    // Existing profile fields
     name: '',
     description: '',
     photoUrl: '',
-    
-    // Financial Information
     occupation: '',
     monthlyIncome: '',
     additionalIncome: '',
     incomeFrequency: 'monthly',
-    
-    // Fixed Expenses
     rentMortgage: '',
     utilities: '',
     insurance: '',
     carPayment: '',
-    
-    // Financial Goals
     savingsGoal: '',
     emergencyFundGoal: '',
     debtPayoffGoal: '',
-    
-    // Debt Information
     creditCardDebt: '',
     studentLoans: '',
     otherDebts: '',
-    
-    // Budget Preferences
     budgetingStyle: 'moderate',
     savingsPriority: 'medium'
   })
@@ -76,7 +65,7 @@ export default function Profile() {
 
   if (showSuccess) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white">
+      <div className="fixed inset-0 flex items-center justify-center dark:bg-gray-900 bg-white">
         <div className="relative">
           <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center animate-scale-up">
             <Check className="w-16 h-16 text-primary-foreground" />
@@ -87,21 +76,21 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="fixed top-6 left-6 z-10">
         <Link href="/">
           <Image className="ml-4" src="/logo-red.png" alt="Logo" width={180} height={40} priority />
         </Link>
       </div>
       <div className="container mx-auto py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
           <div className="bg-[#9333e9] text-primary-foreground py-6 px-8">
             <h2 className="text-3xl font-bold">Editar Perfil</h2>
           </div>
           <form onSubmit={handleSubmit} className="p-8 space-y-8">
             {/* Profile Photo Section */}
             <div className="flex flex-col items-center">
-              <label className="block text-lg font-medium mb-4">
+              <label className="block text-lg font-medium mb-4 dark:text-white">
                 Foto de Perfil
               </label>
               <div className="flex flex-col items-center gap-4">
@@ -114,8 +103,8 @@ export default function Profile() {
                     className="rounded-full object-cover w-32 h-32"
                   />
                 ) : (
-                  <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center">
-                    <Upload className="w-8 h-8 text-gray-400" />
+                  <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                    <Upload className="w-8 h-8 text-gray-400 dark:text-gray-300" />
                   </div>
                 )}
                 <label className="cursor-pointer bg-[#9333e9] hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-full transition-colors duration-200 ease-in-out">
@@ -132,10 +121,10 @@ export default function Profile() {
 
             {/* Basic Information Section */}
             <div className="space-y-4">
-              <h3 className="text-xl font-medium text-gray-900">Informação Básica</h3>
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white">Informação Básica</h3>
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Nome
                   </label>
                   <input
@@ -144,13 +133,13 @@ export default function Profile() {
                     name="name"
                     value={profile.name}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-primary focus:border-primary"
                     placeholder="Digite seu nome"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Descrição
                   </label>
                   <textarea
@@ -159,13 +148,13 @@ export default function Profile() {
                     value={profile.description}
                     onChange={handleInputChange}
                     rows={4}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-primary focus:border-primary"
                     placeholder="Conte mais sobre você"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="occupation" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="occupation" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Profissão
                   </label>
                   <input
@@ -174,7 +163,7 @@ export default function Profile() {
                     name="occupation"
                     value={profile.occupation}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-primary focus:border-primary"
                     placeholder="Digite sua profissão"
                   />
                 </div>
@@ -183,10 +172,10 @@ export default function Profile() {
 
             {/* Income Information Section */}
             <div className="space-y-4">
-              <h3 className="text-xl font-medium text-gray-900">Informações de Renda</h3>
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white">Informações de Renda</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="monthlyIncome" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="monthlyIncome" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Renda Mensal
                   </label>
                   <input
@@ -195,12 +184,12 @@ export default function Profile() {
                     name="monthlyIncome"
                     value={profile.monthlyIncome}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-primary focus:border-primary"
                     placeholder="0"
                   />
                 </div>
                 <div>
-                  <label htmlFor="additionalIncome" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="additionalIncome" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Renda Adicional
                   </label>
                   <input
@@ -209,12 +198,12 @@ export default function Profile() {
                     name="additionalIncome"
                     value={profile.additionalIncome}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-primary focus:border-primary"
                     placeholder="0"
                   />
                 </div>
                 <div>
-                  <label htmlFor="incomeFrequency" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="incomeFrequency" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Frequência de Renda
                   </label>
                   <select
@@ -222,7 +211,7 @@ export default function Profile() {
                     name="incomeFrequency"
                     value={profile.incomeFrequency}
                     onChange={handleInputChange}
-                    className="w-full p-3 text-gray-500 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 text-gray-500 dark:text-white border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-primary focus:border-primary"
                   >
                     <option value="weekly">Semanal</option>
                     <option value="biweekly">Quinzenal</option>
@@ -235,10 +224,10 @@ export default function Profile() {
 
             {/* Fixed Expenses Section */}
             <div className="space-y-4">
-              <h3 className="text-xl font-medium text-gray-900">Despesas Fixas</h3>
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white">Despesas Fixas</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="rentMortgage" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="rentMortgage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Aluguel/Empréstimo Hipotecário
                   </label>
                   <input
@@ -247,12 +236,12 @@ export default function Profile() {
                     name="rentMortgage"
                     value={profile.rentMortgage}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-primary focus:border-primary"
                     placeholder="0"
                   />
                 </div>
                 <div>
-                  <label htmlFor="utilities" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="utilities" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Despesas
                   </label>
                   <input
@@ -261,7 +250,7 @@ export default function Profile() {
                     name="utilities"
                     value={profile.utilities}
                     onChange={handleInputChange}
-                    className="w-full p-3 text-gray-500  border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 text-gray-500 dark:text-white border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-primary focus:border-primary"
                     placeholder="0"
                   />
                 </div>
@@ -270,10 +259,10 @@ export default function Profile() {
 
             {/* Financial Goals Section */}
             <div className="space-y-4">
-              <h3 className="text-xl font-medium text-gray-900">Objetivos Financeiros</h3>
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white">Objetivos Financeiros</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="savingsGoal" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="savingsGoal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Meta de Poupança
                   </label>
                   <input
@@ -282,12 +271,12 @@ export default function Profile() {
                     name="savingsGoal"
                     value={profile.savingsGoal}
                     onChange={handleInputChange}
-                    className="w-full text-gray-500  p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full text-gray-500 dark:text-white p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-primary focus:border-primary"
                     placeholder="0"
                   />
                 </div>
                 <div>
-                  <label htmlFor="emergencyFundGoal" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="emergencyFundGoal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Meta de Fundo de Emergência
                   </label>
                   <input
@@ -296,7 +285,7 @@ export default function Profile() {
                     name="emergencyFundGoal"
                     value={profile.emergencyFundGoal}
                     onChange={handleInputChange}
-                    className="w-full text-gray-500 p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full text-gray-500 dark:text-white p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-primary focus:border-primary"
                     placeholder="0"
                   />
                 </div>
@@ -305,10 +294,10 @@ export default function Profile() {
 
             {/* Budget Preferences Section */}
             <div className="space-y-4">
-              <h3 className="text-xl font-medium text-gray-900">Preferências de Orçamento</h3>
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white">Preferências de Orçamento</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="budgetingStyle" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="budgetingStyle" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Estilo de Orçamento
                   </label>
                   <select
@@ -316,7 +305,7 @@ export default function Profile() {
                     name="budgetingStyle"
                     value={profile.budgetingStyle}
                     onChange={handleInputChange}
-                    className="w-full p-3 text-gray-500 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 text-gray-500 dark:text-white border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-primary focus:border-primary"
                   >
                     <option value="conservative">Conservador</option>
                     <option value="moderate">Moderado</option>
@@ -324,7 +313,7 @@ export default function Profile() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="savingsPriority" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="savingsPriority" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Prioridade de Poupança
                   </label>
                   <select
@@ -332,7 +321,7 @@ export default function Profile() {
                     name="savingsPriority"
                     value={profile.savingsPriority}
                     onChange={handleInputChange}
-                    className="w-full p-3 text-gray-500 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    className="w-full p-3 text-gray-500 dark:text-white border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-primary focus:border-primary"
                   >
                     <option value="low">Baixo</option>
                     <option value="medium">Médio</option>
@@ -344,7 +333,7 @@ export default function Profile() {
 
             <button
               type="submit"
-              className="w-full bg-[#9333e9] text-primary-foreground py-3 px-6 rounded-md hover:bg-primary/90 transition-colors duration-200 ease-in-out text-lg font-medium"
+              className="w-full bg-[#9333e9] text-primary-foreground py-3 px-6 rounded-md hover:bg-purple-600 transition-colors duration-200 ease-in-out text-lg font-medium shadow-lg"
             >
               Salvar Mudanças
             </button>

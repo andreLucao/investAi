@@ -14,7 +14,7 @@ export default function FinancialAssistant() {
   const [audioURL, setAudioURL] = useState('');
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
@@ -26,6 +26,10 @@ export default function FinancialAssistant() {
   ];
 
   useEffect(() => {
+    // Initialize dark mode by default
+    document.documentElement.classList.add('dark');
+    document.body.classList.add('bg-gray-900', 'text-gray-100');
+
     if (darkMode) {
       document.documentElement.classList.add('dark');
       document.body.classList.add('bg-gray-900', 'text-gray-100');

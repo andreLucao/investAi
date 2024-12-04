@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/button';
 import { Outfit } from 'next/font/google'
-import { Calculator, Check } from 'lucide-react';
+import { Calculator, Check, Moon, Sun } from 'lucide-react';
 import InvestmentTimeCalculator from '../components/InvestimentTImeCalculator';
 import FutureValCalc from '../components/FutureValCalc';
 import MonthInvCalc from '../components/MonthInCalc';
@@ -54,6 +54,7 @@ const CalculatorSelector = ({ title, selected, onToggle }) => (
 export default function FinancialCalculators() {
   const [expanded, setExpanded] = useState(false);
   const [selectedCalculators, setSelectedCalculators] = useState([]);
+  const [darkMode, setDarkMode] = useState(true);
 
   const handleCalculatorToggle = (calculatorId) => {
     setSelectedCalculators(prev =>
@@ -63,8 +64,30 @@ export default function FinancialCalculators() {
     );
   };
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    if (darkMode) {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 dark:text-white">
+      <div className="absolute top-4 right-4 z-50">
+        <button 
+          onClick={toggleDarkMode}
+          className="p-2 rounded-full transition-colors dark:bg-slate-700 dark:hover:bg-slate-600 bg-white hover:bg-gray-100"
+          aria-label={darkMode ? 'Modo Claro' : 'Modo Escuro'}
+        >
+          {darkMode 
+            ? <Sun className="w-6 h-6 text-yellow-500" />
+            : <Moon className="w-6 h-6 text-purple-600" />
+          }
+        </button>
+      </div>
+      
       <SideBar expanded={expanded} setExpanded={setExpanded} />
       
       <div className={`transition-all duration-300 ${expanded ? 'ml-64' : 'ml-20'} p-8`}>
