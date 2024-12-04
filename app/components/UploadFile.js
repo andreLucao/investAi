@@ -31,7 +31,6 @@ export default function ImageModal() {
   const handleImageClick = (person) => {
     if (!person.locked) {
       setSelectedOption(person.name)
-      // Reset content when switching options
       setPdfContent(null)
       setExcelContent(null)
     }
@@ -59,7 +58,7 @@ export default function ImageModal() {
       if (excelContent) {
         console.log('Excel Content:', excelContent)
       }
-      setIsOpen(false)
+      window.location.href = '/quarta-etapa';
     }
   }
 
