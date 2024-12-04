@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { MapPin, DollarSign, Navigation, Check, Moon, Sun } from 'lucide-react';
+import { MapPin, DollarSign, Navigation, Check, Moon, Sun, CreditCard, Wallet, Coins, Receipt } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/Card';
 import Link from 'next/link';
 
@@ -23,15 +23,36 @@ const SelectionButton = ({ selected, onClick, children, icon: Icon, disabled }) 
   </button>
 );
 
+const MoneyInput = ({ value, onChange, icon: Icon, placeholder }) => (
+  <div className="relative">
+    <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+      <Icon className="text-gray-500 dark:text-gray-400" size={20} />
+    </div>
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
+                focus:border-purple-500 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800
+                bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                transition-all duration-300"
+    />
+  </div>
+);
+
 export default function FirstStage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('');
   const [selectedIncome, setSelectedIncome] = useState('');
+  const [hasDebts, setHasDebts] = useState('');
+  const [hasEmergencyFund, setHasEmergencyFund] = useState('');
+  const [monthlyIncome, setMonthlyIncome] = useState('');
+  const [monthlyExpenses, setMonthlyExpenses] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // Check system preference on mount
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
@@ -87,8 +108,13 @@ export default function FirstStage() {
     { id: 'high', name: '+4 salários mínimos' }
   ];
 
+  const yesNoOptions = [
+    { id: 'yes', name: 'Sim' },
+    { id: 'no', name: 'Não' }
+  ];
+
   const handleNext = () => {
-    if (currentStep < 2) {
+    if (currentStep < 6) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -175,11 +201,95 @@ export default function FirstStage() {
               {range.name}
             </SelectionButton>
           ))}
-          {selectedIncome && (
+          <ConfirmButton 
+            onClick={handleNext}
+            disabled={!selectedIncome}
+          />
+        </div>
+      )
+    },
+    {
+      title: 'Você tem dívidas?',
+      content: (
+        <div className="space-y-3">
+          {yesNoOptions.map((option) => (
+            <SelectionButton
+              key={option.id}
+              selected={hasDebts === option.id}
+              onClick={() => setHasDebts(option.id)}
+              icon={CreditCard}
+            >
+              {option.name}
+            </SelectionButton>
+          ))}
+          <ConfirmButton 
+            onClick={handleNext}
+            disabled={!hasDebts}
+          />
+        </div>
+      )
+    },
+    {
+      title: 'Você já possui uma reserva de emergência?',
+      content: (
+        <div className="space-y-3">
+          {yesNoOptions.map((option) => (
+            <SelectionButton
+              key={option.id}
+              selected={hasEmergencyFund === option.id}
+              onClick={() => setHasEmergencyFund(option.id)}
+              icon={Wallet}
+            >
+              {option.name}
+            </SelectionButton>
+          ))}
+          <ConfirmButton 
+            onClick={handleNext}
+            disabled={!hasEmergencyFund}
+          />
+        </div>
+      )
+    },
+    {
+      title: 'Quanto você ganha por mês?',
+      content: (
+        <div className="space-y-3">
+          <MoneyInput
+            value={monthlyIncome}
+            onChange={setMonthlyIncome}
+            icon={Coins}
+            placeholder="Digite sua renda mensal"
+          />
+          <ConfirmButton 
+            onClick={handleNext}
+            disabled={!monthlyIncome}
+          />
+        </div>
+      )
+    },
+    {
+      title: 'Qual seu gasto mensal?',
+      content: (
+        <div className="space-y-3">
+          <MoneyInput
+            value={monthlyExpenses}
+            onChange={setMonthlyExpenses}
+            icon={Receipt}
+            placeholder="Digite seus gastos mensais"
+          />
+          {monthlyExpenses && (
             <Link href='/fluxo-inicial/segunda-etapa' className="block">
               <ConfirmButton 
-                onClick={() => console.log({ selectedCountry, selectedRegion, selectedIncome })}
-                disabled={!selectedIncome}
+                onClick={() => console.log({ 
+                  selectedCountry, 
+                  selectedRegion, 
+                  selectedIncome, 
+                  hasDebts,
+                  hasEmergencyFund,
+                  monthlyIncome,
+                  monthlyExpenses
+                })}
+                disabled={!monthlyExpenses}
               />
             </Link>
           )}
@@ -212,7 +322,7 @@ export default function FirstStage() {
                 {steps.map((_, index) => (
                   <div
                     key={index}
-                    className={`h-2 w-16 rounded-full transition-all duration-300 ${
+                    className={`h-2 w-12 rounded-full transition-all duration-300 ${
                       index <= currentStep ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'
                     }`}
                   />
