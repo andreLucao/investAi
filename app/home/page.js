@@ -58,7 +58,7 @@ export default function LandingPage() {
     {
       name: 'Empresarial',
       price: '4,90',
-      description: 'Ideal para que seus funcionarios tenham organização financeira.',
+      description: 'Ideal para que seus funcionários tenham organização financeira.',
       priceSubtext: 'por colaborador',
       features: [
         'Tudo do Premium',
