@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Lock } from 'lucide-react'
-import PDFReader from './PDFReader'
+import PDFReader from './pdfReader'
 import ExcelReader from './excelReader'
 
 const people = [
