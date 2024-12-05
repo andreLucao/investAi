@@ -1,50 +1,33 @@
-
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
 import { MongoClient } from 'mongodb';
 
-let clientPromise;
+const clientPromise = new MongoClient(process.env.MONGO_URI).connect();
 
-async function connectToDatabase() {
-  if (!clientPromise) {
-    const client = new MongoClient(process.env.MONGO_URI);
-    clientPromise = client.connect();
+export async function GET() {
+  try {
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGO_DB_NAME);
+    
+    // Your MongoDB query logic here
+    const data = await db.collection('your_collection').find().toArray();
+    
+    return Response.json({ data });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
   }
-  return clientPromise;
 }
 
-export default NextAuth({
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-  ],
-  callbacks: {
-    async signIn({ user }) {
-      try {
-   
-        const client = await connectToDatabase();
-        const db = client.db(process.env.MONGO_DB_NAME);
-
-      
-        const existingUser = await db.collection('users').findOne({ email: user.email });
-
-        if (!existingUser) {
-          
-          await db.collection('users').insertOne({
-            name: user.name,
-            email: user.email,
-            image: user.image,
-            createdAt: new Date(),
-          });
-        }
-
-        return true; 
-      } catch (error) {
-        
-        return false; 
-      }
-    },
-  },
-});
+export async function POST(request) {
+  try {
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGO_DB_NAME);
+    
+    const body = await request.json();
+    
+    // Your MongoDB insert/update logic here
+    const result = await db.collection('your_collection').insertOne(body);
+    
+    return Response.json({ success: true, result });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+}
