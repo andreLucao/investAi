@@ -1,25 +1,50 @@
+
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
 import { MongoClient } from 'mongodb';
 
-const uri = 'mongodb://rwuser:%40Leo290405@192.168.0.106:8635,192.168.0.115:8635/test?authSource=admin&replicaSet=replica';
+let clientPromise;
 
-
-
-export async function GET(request) {
-  try {
-    const client = new MongoClient(uri);
-    await client.connect(); // Tenta conectar ao MongoDB
-    await client.db('test').command({ ping: 1 }); // Verifica se o banco está respondendo
-    await client.close(); // Fecha a conexão
-
-    return new Response(JSON.stringify({ message: 'Conexão bem-sucedida com o MongoDB!' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Erro ao conectar ao MongoDB:', error.message);
-    return new Response(JSON.stringify({ message: `Erro ao conectar: ${error.message}` }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+async function connectToDatabase() {
+  if (!clientPromise) {
+    const client = new MongoClient(process.env.MONGO_URI);
+    clientPromise = client.connect();
   }
+  return clientPromise;
 }
+
+export default NextAuth({
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
+  callbacks: {
+    async signIn({ user }) {
+      try {
+   
+        const client = await connectToDatabase();
+        const db = client.db(process.env.MONGO_DB_NAME);
+
+      
+        const existingUser = await db.collection('users').findOne({ email: user.email });
+
+        if (!existingUser) {
+          
+          await db.collection('users').insertOne({
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            createdAt: new Date(),
+          });
+        }
+
+        return true; 
+      } catch (error) {
+        console.error('Erro ao salvar o usuário no MongoDB:', error);
+        return false; 
+      }
+    },
+  },
+});
