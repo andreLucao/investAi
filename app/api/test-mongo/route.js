@@ -42,7 +42,7 @@ export default NextAuth({
 
         return true; 
       } catch (error) {
-        console.error('Erro ao salvar o usuário no MongoDB:', error);
+        
         return false; 
       }
     },
