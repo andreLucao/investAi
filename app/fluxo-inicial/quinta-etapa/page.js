@@ -10,6 +10,18 @@ export default function LoginPage() {
     document.documentElement.classList.add('dark');
   }, []);
 
+  const [connectionStatus, setConnectionStatus] = useState('');
+
+  async function testMongoConnection() {
+    try {
+      const response = await fetch('/api/test-mongo'); 
+      const data = await response.json();
+      setConnectionStatus(data.message);
+    } catch (error) {
+      setConnectionStatus(`Erro: ${error.message}`);
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-gray-900 transition-colors duration-300">
       <Card className="max-w-md w-full bg-gray-800 shadow-lg">
